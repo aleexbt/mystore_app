@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "968306573371",
+    "firebase_url": "https://mystore-c1d84.firebaseio.com",
+    "project_id": "mystore-c1d84",
+    "storage_bucket": "mystore-c1d84.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968306573371:android:70dc96b7ce6dc6521d1c1e",
+        "android_client_info": {
+          "package_name": "com.xelapps.mystore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "968306573371-fsdbk9aqmnbciddlktdk0q962g1sgshh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiYqsEzkjGcIOmNFQcvkQeIzqg9YwKzvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "968306573371-fsdbk9aqmnbciddlktdk0q962g1sgshh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
