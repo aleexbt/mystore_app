@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/user_provider.dart';
+import 'package:mystore/helpers/notification_helper.dart';
 import 'package:mystore/screens/auth/login.dart';
 import 'package:mystore/screens/home.dart';
 import 'package:mystore/screens/categories.dart';
@@ -12,18 +13,28 @@ import 'package:mystore/screens/my_orders.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
+  final redirectPage;
+
+  const App({Key key, this.redirectPage}) : super(key: key);
   @override
   _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> {
-  final _pageController = PageController();
+  PageController _pageController = PageController();
   int _selectedIndex = 0;
 
   void onPageChanged(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void redirect(int page) {
+    setState(() {
+      _selectedIndex = page;
+    });
+    _pageController = PageController(initialPage: page);
   }
 
   @override
@@ -34,6 +45,16 @@ class _AppState extends State<App> {
       statusBarColor: Colors.transparent,
       // statusBarIconBrightness: Brightness.dark,
     ));
+    if (widget.redirectPage != null) {
+      redirect(widget.redirectPage);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    String userId = Provider.of<UserModel>(context).userData?.id ?? null;
+    NotificationHelper().initOneSignal(userId: userId);
   }
 
   @override

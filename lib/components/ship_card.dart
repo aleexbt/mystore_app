@@ -70,7 +70,7 @@ class _ShipCardState extends State<ShipCard> {
                 SizedBox(height: 10.0),
                 RaisedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/settings/address');
+                    Navigator.pushNamed(context, '/settings/address_editor');
                   },
                   child: Text('Adicionar endereço'),
                 ),

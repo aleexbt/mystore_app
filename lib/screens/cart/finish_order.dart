@@ -43,9 +43,10 @@ class FinishOrder extends StatelessWidget {
                 textColor: Colors.white,
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(
-                      context, '/app', (route) => false);
+                      context, '/app', (route) => false,
+                      arguments: 2);
                 },
-                child: Text('Voltar para Início'),
+                child: Text('Ir para meus pedidos'),
               ),
             ),
           ],

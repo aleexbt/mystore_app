@@ -53,6 +53,7 @@ class PaymentMethods extends StatelessWidget {
                         children: [
                           Divider(),
                           GestureDetector(
+                            behavior: HitTestBehavior.translucent,
                             onTap: () {
                               CartModel cartModel = Provider.of<CartModel>(
                                   context,
@@ -101,8 +102,9 @@ class PaymentMethods extends StatelessWidget {
               ),
               Divider(),
               GestureDetector(
+                behavior: HitTestBehavior.translucent,
                 onTap: () =>
-                    Navigator.pushNamed(context, '/settings/credit_card'),
+                    Navigator.pushNamed(context, '/settings/payment_editor'),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                   child: Row(
@@ -130,6 +132,7 @@ class PaymentMethods extends StatelessWidget {
               ),
               Divider(),
               GestureDetector(
+                behavior: HitTestBehavior.translucent,
                 onTap: () {
                   CartModel cartModel =
                       Provider.of<CartModel>(context, listen: false);
@@ -156,6 +159,7 @@ class PaymentMethods extends StatelessWidget {
               ),
               Divider(),
               GestureDetector(
+                behavior: HitTestBehavior.translucent,
                 onTap: () => _cashChangeBottomSheet(context),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),

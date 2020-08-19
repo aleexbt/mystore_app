@@ -46,8 +46,9 @@ class OrderTile extends StatelessWidget {
     String text = 'Descrição:\n';
     for (var p in snapshot['products']) {
       text +=
-          '${p['qtd']} x ${p['title']} (${currency.format(p['price'] / 100)})\n';
+          '${p['qtd']}x ${p['title']} (${currency.format(p['price'] / 100)})\n';
     }
+    text += 'Entrega: ${currency.format(snapshot['shipping'] / 100)}\n';
     text += 'Total: ${currency.format(snapshot['total'] / 100)}';
     return text;
   }

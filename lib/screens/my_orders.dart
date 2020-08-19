@@ -52,7 +52,7 @@ class _MyOrdersState extends State<MyOrders>
       orderList = [];
       getOrders();
       channel = IOWebSocketChannel.connect(
-          'wss://com-xelapps-mystore.herokuapp.com',
+          'wss://xelapps-mystore.herokuapp.com',
           headers: {
             'Authorization': Provider.of<UserModel>(context).token,
           });

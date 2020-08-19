@@ -2,10 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/foundation.dart';
 
-final String baseUrl = 'https://com-xelapps-mystore.herokuapp.com';
+const bool isProduction = bool.fromEnvironment('dart.vm.product');
+
+final String baseUrl = isProduction
+    ? 'https://xelapps-mystore.herokuapp.com'
+    : 'http://192.168.0.10:3000';
 
 BaseOptions options = BaseOptions(
-  connectTimeout: 10000,
+  connectTimeout: 20000,
   receiveTimeout: 3000,
 );
 

@@ -15,15 +15,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 
-class CreditCard extends StatefulWidget {
+class PaymentEditor extends StatefulWidget {
   final UserCard creditCardData;
-  CreditCard({this.creditCardData});
+  PaymentEditor({this.creditCardData});
 
   @override
-  _CreditCardState createState() => _CreditCardState();
+  _PaymentEditorState createState() => _PaymentEditorState();
 }
 
-class _CreditCardState extends State<CreditCard> {
+class _PaymentEditorState extends State<PaymentEditor> {
   String _selectedAddress;
   MaskTextInputFormatter ccFormatter = MaskTextInputFormatter(
       mask: '#### #### #### ####', filter: {"#": RegExp(r'[0-9]')});
@@ -337,8 +337,9 @@ class _CreditCardState extends State<CreditCard> {
                   },
                 ),
                 GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onTap: () =>
-                      Navigator.pushNamed(context, '/settings/address'),
+                      Navigator.pushNamed(context, '/settings/address_editor'),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Align(

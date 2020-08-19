@@ -279,6 +279,7 @@ class Checkout extends StatelessWidget {
   GestureDetector selectPaymentType(
       BuildContext context, int prices, int ship, int discount) {
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onTap: () =>
           Navigator.pushNamed(context, '/cart/payment_methods', arguments: {
         'data': (prices + ship - discount),
@@ -314,6 +315,7 @@ class Checkout extends StatelessWidget {
   GestureDetector selectedPaymentType(
       BuildContext context, int prices, int ship, int discount) {
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onTap: () =>
           Navigator.pushNamed(context, '/cart/payment_methods', arguments: {
         'data': (prices + ship - discount),
