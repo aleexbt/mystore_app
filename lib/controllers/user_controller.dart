@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/helpers/user_functions.dart';
 import 'package:mystore/models/user_model.dart';
@@ -9,21 +11,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserModel extends ChangeNotifier {
+class UserController extends GetxController {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   bool _isLoggedIn = false;
   bool isLoading = false;
-  String token = '';
+  String token;
   User _userData;
 
   void setUserData(User userData) {
     _userData = userData;
-    notifyListeners();
+    update();
   }
 
   void addCard(UserCard card) {
     _userData.cards.add(card);
-    notifyListeners();
+    update();
   }
 
   void editCard(UserCard card) {
@@ -37,13 +39,13 @@ class UserModel extends ChangeNotifier {
       edit.cvv = card.cvv;
       edit.cpf = card.cpf;
       edit.billing = card.billing;
-      notifyListeners();
+      update();
     }
   }
 
   void addAddress(UserAddress address) {
     _userData.address.add(address);
-    notifyListeners();
+    update();
   }
 
   void editAddress(UserAddress address) {
@@ -60,13 +62,13 @@ class UserModel extends ChangeNotifier {
       edit.neighborhood = address.neighborhood;
       edit.city = address.city;
       edit.state = address.state;
-      notifyListeners();
+      update();
     }
   }
 
   void removeAddress(UserAddress address) {
     _userData.address.removeWhere((item) => item.id == address.id);
-    notifyListeners();
+    update();
   }
 
   void removeCard(UserCard card) async {
@@ -79,7 +81,7 @@ class UserModel extends ChangeNotifier {
     cardKeys.removeWhere((item) => item == _oldCardKey);
     prefs.setStringList('${userData.id}_cards', cardKeys);
     await storage.delete(key: _oldCardKey);
-    notifyListeners();
+    update();
   }
 
   void updateUser(Map<String, dynamic> user) {
@@ -87,12 +89,12 @@ class UserModel extends ChangeNotifier {
     userData.email = user['email'];
     userData.phone = user['phone'];
     userData.cpf = user['cpf'];
-    notifyListeners();
+    update();
   }
 
   set setLoggedIn(bool value) {
     _isLoggedIn = value;
-    notifyListeners();
+    update();
   }
 
   bool get isLoggedIn => _isLoggedIn;
@@ -104,7 +106,7 @@ class UserModel extends ChangeNotifier {
     String password,
   }) async {
     isLoading = true;
-    notifyListeners();
+    update();
 
     Map<String, dynamic> userData = {
       'name': name,
@@ -119,7 +121,7 @@ class UserModel extends ChangeNotifier {
       return null;
     } else {
       isLoading = false;
-      notifyListeners();
+      update();
       return response.data['errors'];
     }
   }
@@ -127,7 +129,7 @@ class UserModel extends ChangeNotifier {
   Future<String> signIn(
       {@required String email, @required String password}) async {
     isLoading = true;
-    notifyListeners();
+    update();
     final storage = FlutterSecureStorage();
     final SharedPreferences prefs = await _prefs;
     Map<String, dynamic> userData = {'email': email, 'password': password};
@@ -153,11 +155,11 @@ class UserModel extends ChangeNotifier {
       prefs.setString('token', response.data['jwt']);
       prefs.setBool('isLoggedIn', true);
       isLoading = false;
-      notifyListeners();
+      update();
       return null;
     } else {
       isLoading = false;
-      notifyListeners();
+      update();
       return response.data['msg'];
     }
   }

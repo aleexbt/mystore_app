@@ -128,13 +128,11 @@ class _AddressEditorState extends State<AddressEditor> {
                     'state': _stateController.text,
                   };
                   if (widget.addressData != null) {
-                    await Api.updateAddress(userData,
-                        Provider.of<UserModel>(context, listen: false).token);
+                    await Api.updateAddress(userData);
                     Provider.of<UserModel>(context, listen: false)
                         .editAddress(UserAddress.fromJson(userData));
                   } else {
-                    var response = await Api.addAddress(userData,
-                        Provider.of<UserModel>(context, listen: false).token);
+                    var response = await Api.addAddress(userData);
                     userData['_id'] = response.data['id'];
                     Provider.of<UserModel>(context, listen: false)
                         .addAddress(UserAddress.fromJson(userData));

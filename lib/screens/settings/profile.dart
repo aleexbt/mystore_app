@@ -21,29 +21,53 @@ class _ProfileState extends State<Profile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _cpfController = TextEditingController();
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isSavingData = false;
 
   MaskTextInputFormatter cpfFormatter = MaskTextInputFormatter(
       mask: '###.###.###-##', filter: {"#": RegExp(r'[0-9]')});
 
+  //   // Colocar o cursor na posição correta de cada campo.
+  //   _nameController.selection = TextSelection.fromPosition(
+  //       TextPosition(offset: _nameController.text.length));
+  //   _emailController.selection = TextSelection.fromPosition(
+  //       TextPosition(offset: _emailController.text.length));
+  //   _phoneController.selection = TextSelection.fromPosition(
+  //       TextPosition(offset: _phoneController.text.length));
+  //   _cpfController.selection = TextSelection.fromPosition(
+  //       TextPosition(offset: _cpfController.text.length));
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.profileData != null) {
+      var userData = widget.profileData;
+      _nameController.text = userData.name;
+      _emailController.text = userData.email;
+      _phoneController.text = userData.phone ?? null;
+      _cpfController.text = CPF.format(userData.cpf) ?? null;
+    }
+  }
+
   void updateUser() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       _isSavingData = true;
     });
-    String token = Provider.of<UserModel>(context, listen: false).token;
     var userData = {
       'name': _nameController.text,
       'email': _emailController.text,
       'phone': _phoneController.text.replaceAll(RegExp("[^0-9]+"), ''),
       'cpf': _cpfController.text.replaceAll(RegExp("[^0-9]+"), ''),
     };
-    Provider.of<UserModel>(context, listen: false).updateUser(userData);
-    var response = await Api.updateUser(userData, token);
+
+    var response = await Api.updateUser(userData);
     setState(() {
       _isSavingData = false;
     });
     if (response.data['success']) {
+      Provider.of<UserModel>(context, listen: false).updateUser(userData);
       _saveResponse(response.data['msg'], Colors.teal, 4);
     } else {
       _saveResponse(response.data['msg'], Colors.red, 4);
@@ -52,12 +76,6 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    var userData = Provider.of<UserModel>(context).userData;
-    _nameController.text = userData.name;
-    _emailController.text = userData.email;
-    _phoneController.text = userData.phone ?? null;
-    _cpfController.text = CPF.format(userData.cpf) ?? null;
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -103,6 +121,7 @@ class _ProfileState extends State<Profile> {
                   isRequired: false,
                   controller: _phoneController,
                   keyboardType: TextInputType.number,
+                  maxLength: 11,
                   hintText: 'Número de telefone',
                 ),
                 SizedBox(height: 10.0),
@@ -114,6 +133,38 @@ class _ProfileState extends State<Profile> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [cpfFormatter],
                   hintText: 'Número do CPF',
+                ),
+                SizedBox(height: 10.0),
+                Text('Senha'),
+                SizedBox(height: 5.0),
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () =>
+                      Navigator.pushNamed(context, '/settings/change_password'),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 45.0,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(
+                        color: Colors.grey[400],
+                        width: 0.5,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    child: Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0, top: 12.0),
+                        child: Text(
+                          '************',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 10.0),
               ],

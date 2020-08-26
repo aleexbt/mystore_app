@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (_token != null && _isLoggedIn) {
         debugPrint('Usuário autenticado');
-        var response = await Api.userInfo(_token);
+        var response = await Api.userInfo();
 
         User userData = User.fromJson({
           'id': response.data['_id'],

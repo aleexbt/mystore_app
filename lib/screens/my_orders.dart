@@ -24,8 +24,7 @@ class _MyOrdersState extends State<MyOrders>
   bool _isLoading = true;
 
   Future<List> getOrders() async {
-    var response = await Api.getOrders(
-        Provider.of<UserModel>(context, listen: false).token);
+    var response = await Api.getOrders();
     setState(() {
       orderList = [];
       orderList.addAll(response);
@@ -46,15 +45,16 @@ class _MyOrdersState extends State<MyOrders>
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     var userModel = Provider.of<UserModel>(context);
+    String _token = await Api.getToken();
     if (userModel.isLoggedIn) {
       orderList = [];
       getOrders();
       channel = IOWebSocketChannel.connect(
           'wss://xelapps-mystore.herokuapp.com',
           headers: {
-            'Authorization': Provider.of<UserModel>(context).token,
+            'Authorization': _token,
           });
       channel.sink.add('getOrders');
       broadcastStream = channel.stream.asBroadcastStream();
@@ -66,7 +66,7 @@ class _MyOrdersState extends State<MyOrders>
   handleWsStatus() {
     broadcastStream.listen(
       (dynamic message) {
-        debugPrint('Websocket: $message');
+        debugPrint('WEBSOCKET_MESSAGE_RECEIVED');
       },
       onDone: () => debugPrint('Websocket desconectado.'),
       onError: (error) => debugPrint('Ocorreu um erro no websocket.'),

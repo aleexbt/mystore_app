@@ -19,8 +19,8 @@ class Settings extends StatelessWidget {
               children: <Widget>[
                 GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: () =>
-                      Navigator.pushNamed(context, '/settings/profile'),
+                  onTap: () => Navigator.pushNamed(context, '/settings/profile',
+                      arguments: context.read<UserModel>().userData),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                     child: Row(

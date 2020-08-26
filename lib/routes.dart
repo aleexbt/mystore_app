@@ -7,6 +7,7 @@ import 'package:mystore/screens/cart/cart.dart';
 import 'package:mystore/screens/categories.dart';
 import 'package:mystore/screens/category.dart';
 import 'package:mystore/screens/cart/checkout.dart';
+import 'package:mystore/screens/settings/change_password.dart';
 import 'package:mystore/screens/settings/payment_editor.dart';
 import 'package:mystore/screens/cart/finish_order.dart';
 import 'package:mystore/screens/auth/login.dart';
@@ -69,6 +70,10 @@ class RouteGenerator {
       case '/settings/profile':
         return CupertinoPageRoute(
           builder: (_) => Profile(profileData: args),
+        );
+      case '/settings/change_password':
+        return CupertinoPageRoute(
+          builder: (_) => ChangePassword(),
         );
       case '/cart/payment_methods':
         return CupertinoPageRoute(

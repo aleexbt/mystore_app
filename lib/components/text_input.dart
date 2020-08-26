@@ -47,8 +47,8 @@ class TextInput extends StatelessWidget {
         hintText: hintText,
         filled: true,
         fillColor: ThemeMode.system == ThemeMode.light
-            ? Colors.blueGrey[50]
-            : Colors.grey[750],
+            ? Colors.grey[200]
+            : Colors.grey[200],
         isDense: true,
         contentPadding: EdgeInsets.all(12),
         errorStyle: TextStyle(height: 0),

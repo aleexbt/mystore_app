@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mystore/controllers/user_provider.dart';
 import 'package:mystore/datas/cart_product.dart';
 import 'package:mystore/models/user_model.dart';
@@ -8,16 +9,17 @@ import 'package:mystore/services/api.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-class CartModel extends ChangeNotifier {
+class CartController extends GetxController {
+  static CartController get to => Get.find();
   List<CartProduct> products = [];
   bool isLoading = false;
-  bool _apiLoading = false;
+  RxBool _apiLoading = false.obs;
   String _couponCode = '';
   int _discountPercentage = 0;
   int productsPrice = 0;
   int totalItems = 0;
   String _selectedShipping;
-  int _shippingPrice = 0;
+  RxInt _shippingPrice = 0.obs;
   String selectedCard;
 
 // Checkout payment methods: 1 Credit Card, 2 Cash, 3 Debit
@@ -27,50 +29,50 @@ class CartModel extends ChangeNotifier {
   int _paymentChange;
 
   set setApiLoading(bool value) {
-    _apiLoading = value;
-    notifyListeners();
+    _apiLoading.value = value;
+    update();
   }
 
-  get apiLoading => _apiLoading;
+  get apiLoading => _apiLoading.value;
 
   set selectedShipping(String value) {
     _selectedShipping = value;
-    notifyListeners();
+    update();
   }
 
   get selectedShipping => _selectedShipping;
 
   set setShippingPrice(int value) {
-    _shippingPrice = value;
-    notifyListeners();
+    _shippingPrice.value = value;
+    update();
   }
 
-  get shippingPrice => _shippingPrice;
+  get shippingPrice => _shippingPrice.value;
 
   set onlinePayment(bool value) {
     _onlinePayment = value;
-    notifyListeners();
+    update();
   }
 
   bool get onlinePayment => _onlinePayment;
 
   set paymentMethod(int value) {
     _paymentMethod = value;
-    notifyListeners();
+    update();
   }
 
   int get paymentMethod => _paymentMethod;
 
   set isChangeNeeded(bool value) {
     _isChangeNeeded = value;
-    notifyListeners();
+    update();
   }
 
   bool get isChangeNeeded => _isChangeNeeded;
 
   set paymentChange(int value) {
     _paymentChange = value;
-    notifyListeners();
+    update();
   }
 
   get paymentChange => _paymentChange;
@@ -79,14 +81,14 @@ class CartModel extends ChangeNotifier {
 
   set setCouponCode(String value) {
     _couponCode = value;
-    notifyListeners();
+    update();
   }
 
   get couponCode => _couponCode;
 
   set setDiscountPercentage(int value) {
     _discountPercentage = value;
-    notifyListeners();
+    update();
   }
 
   get discountPercentage => _discountPercentage;
@@ -95,42 +97,42 @@ class CartModel extends ChangeNotifier {
     _onlinePayment = null;
     _paymentMethod = null;
     _paymentChange = null;
-    notifyListeners();
+    update();
   }
 
   void addressClear() {
     _selectedShipping = null;
-    notifyListeners();
+    update();
   }
 
   void addCartItem(CartProduct cartProduct) {
     products.add(cartProduct);
-    notifyListeners();
+    update();
     _saveData();
   }
 
   void removeCartItem(CartProduct cartProduct) {
     products.remove(cartProduct);
-    notifyListeners();
+    update();
     _saveData();
   }
 
   void decProduct(CartProduct cartProduct) {
     cartProduct.qtd--;
-    notifyListeners();
+    update();
     _saveData();
   }
 
   void incProduct(CartProduct cartProduct) {
     cartProduct.qtd++;
-    notifyListeners();
+    update();
     _saveData();
   }
 
   void setCoupon(String couponCode, int discountPercentage) {
     setCouponCode = couponCode;
     setDiscountPercentage = discountPercentage;
-    notifyListeners();
+    update();
   }
 
   int getProductsPrice() {
@@ -157,6 +159,7 @@ class CartModel extends ChangeNotifier {
   Future<File> _saveData() async {
     var data = json.encode(products.map((e) => e.toJson()).toList());
     final file = await _getFile();
+    debugPrint(data);
     return file.writeAsString(data);
   }
 
@@ -187,7 +190,7 @@ class CartModel extends ChangeNotifier {
       for (Map item in productList) {
         products.add(CartProduct.fromJson(item));
       }
-      notifyListeners();
+      update();
       _saveData();
     } catch (err) {
       print(err);
@@ -197,7 +200,7 @@ class CartModel extends ChangeNotifier {
   Future<String> finishOrder(BuildContext context) async {
     if (products.length == 0) return null;
     isLoading = true;
-    notifyListeners();
+    update();
     int productsPrice = getProductsPrice();
     int shipPrice = getShipPrice();
 
@@ -245,13 +248,13 @@ class CartModel extends ChangeNotifier {
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/cart/checkout/finish', (Route<dynamic> route) => false,
           arguments: {'orderId': response.data['order']});
-      notifyListeners();
+      update();
       _saveData();
       return null;
     } else {
       print(response.data['msg']);
       isLoading = false;
-      notifyListeners();
+      update();
       return response.data['msg'];
     }
   }

@@ -1,8 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const bool isProduction = bool.fromEnvironment('dart.vm.product');
+Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+final _storage = FlutterSecureStorage();
 
 final String baseUrl = isProduction
     ? 'https://xelapps-mystore.herokuapp.com'
@@ -18,6 +24,29 @@ final _dioCacheManager = DioCacheManager(CacheConfig());
 //Options _cacheOptions = buildCacheOptions(Duration(hours: 3));
 
 class Api {
+  static Future<String> getToken() async {
+    final SharedPreferences prefs = await _prefs;
+    Map<String, dynamic> payload = Jwt.parseJwt(prefs.get('token'));
+    Future<String> secureToken = _storage.read(key: 'secure_token');
+    String _secureToken = await secureToken;
+    int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    String _token = prefs.get('token');
+
+    if (payload['exp'] < currentTime) {
+      dio.options.headers["Authorization"] = '$_token';
+      dio.options.headers["token"] = '$_secureToken';
+      Response response = await dio.post(baseUrl + '/token');
+      if (response.data['success']) {
+        debugPrint('REFRESH_TOKEN_SUCCESS');
+        prefs.setString('token', response.data['token']);
+        _token = response.data['token'];
+      } else {
+        debugPrint('REFRESH_TOKEN_FAIL');
+      }
+    }
+    return _token;
+  }
+
   static Future appConfig() async {
     dio.interceptors.add(_dioCacheManager.interceptor);
     try {
@@ -34,8 +63,9 @@ class Api {
     }
   }
 
-  static Future userInfo(String token) async {
-    dio.options.headers["Authorization"] = '$token';
+  static Future userInfo() async {
+    String _token = await getToken();
+    dio.options.headers["Authorization"] = '$_token';
     Response response = await dio.get(baseUrl + '/users/me');
     return response;
   }
@@ -73,15 +103,16 @@ class Api {
     return response;
   }
 
-  static Future createOrder(
-      Map<String, dynamic> orderData, String token) async {
-    dio.options.headers["Authorization"] = '$token';
+  static Future createOrder(Map<String, dynamic> orderData) async {
+    String _token = await getToken();
+    dio.options.headers["Authorization"] = '$_token';
     Response response = await dio.post(baseUrl + '/orders', data: orderData);
     return response;
   }
 
-  static Future getOrders(String token) async {
-    dio.options.headers["Authorization"] = '$token';
+  static Future getOrders() async {
+    String _token = await getToken();
+    dio.options.headers["Authorization"] = '$_token';
     Response response = await dio.get(baseUrl + '/orders');
     return response.data;
   }
@@ -96,29 +127,32 @@ class Api {
     return response.data;
   }
 
-  static Future addAddress(Map<String, dynamic> userData, String token) async {
-    dio.options.headers["Authorization"] = '$token';
+  static Future addAddress(Map<String, dynamic> userData) async {
+    String _token = await getToken();
+    dio.options.headers["Authorization"] = '$_token';
     Response response =
         await dio.post(baseUrl + '/users/address', data: userData);
     return response;
   }
 
-  static Future updateUser(Map<String, dynamic> userData, String token) async {
-    dio.options.headers["Authorization"] = '$token';
+  static Future updateUser(Map<String, dynamic> userData) async {
+    String _token = await getToken();
+    dio.options.headers["Authorization"] = '$_token';
     Response response = await dio.put(baseUrl + '/users', data: userData);
     return response;
   }
 
-  static Future updateAddress(
-      Map<String, dynamic> userData, String token) async {
-    dio.options.headers["Authorization"] = '$token';
+  static Future updateAddress(Map<String, dynamic> userData) async {
+    String _token = await getToken();
+    dio.options.headers["Authorization"] = '$_token';
     Response response =
         await dio.put(baseUrl + '/users/address', data: userData);
     return response;
   }
 
-  static Future removeAddress(String token, String addressId) async {
-    dio.options.headers["Authorization"] = '$token';
+  static Future removeAddress(String addressId) async {
+    String _token = await getToken();
+    dio.options.headers["Authorization"] = '$_token';
     Response response = await dio.delete(baseUrl + '/users/address/$addressId');
     return response;
   }

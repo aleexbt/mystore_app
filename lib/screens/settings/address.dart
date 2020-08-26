@@ -96,8 +96,7 @@ class Address extends StatelessWidget {
   void removeAddress(UserAddress address, BuildContext context) async {
     Provider.of<UserModel>(context, listen: false).removeAddress(address);
     Provider.of<CartModel>(context, listen: false).addressClear();
-    await Api.removeAddress(
-        Provider.of<UserModel>(context, listen: false).token, address.id);
+    await Api.removeAddress(address.id);
   }
 
   @override
