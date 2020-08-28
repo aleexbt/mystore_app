@@ -139,8 +139,8 @@ class _ProfileState extends State<Profile> {
                 SizedBox(height: 5.0),
                 GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: () =>
-                      Navigator.pushNamed(context, '/settings/change_password'),
+                  onTap: () => Navigator.pushNamed(
+                      context, '/settings/profile/change_password'),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     height: 45.0,
@@ -152,15 +152,13 @@ class _ProfileState extends State<Profile> {
                       ),
                       borderRadius: BorderRadius.circular(4.0),
                     ),
-                    child: Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0, top: 12.0),
-                        child: Text(
-                          '************',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 20.0,
-                          ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0, top: 12.0),
+                      child: Text(
+                        '************',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 20.0,
                         ),
                       ),
                     ),

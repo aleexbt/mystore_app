@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mystore/constants.dart';
 
 class NetworkError extends StatelessWidget {
   final Function retry;
@@ -8,60 +10,47 @@ class NetworkError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: MediaQuery.of(context).size.height -
+          MediaQuery.of(context).padding.top,
+      color: Colors.white,
       padding: EdgeInsets.all(20.0),
-      margin: EdgeInsets.fromLTRB(
-          30.0, MediaQuery.of(context).size.height / 4, 30.0, 0.0),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 5.0,
-            spreadRadius: 0.0,
-            offset: Offset(1.0, 1.0), // shadow direction: bottom right
-          )
-        ],
-      ),
       child: Column(
         children: [
-          Icon(
-            Icons.error,
-            size: 60.0,
-            color: Colors.grey[500],
+          SizedBox(height: MediaQuery.of(context).size.height / 6),
+          SvgPicture.asset(
+            'assets/disconnected.svg',
+            semanticsLabel: 'Sem conexão',
+            width: 500.0,
           ),
           SizedBox(height: 10.0),
           Text(
-            'Não conseguimos conectar ao servidor. \nVerifique sua conexão.',
-            textAlign: TextAlign.center,
+            'Sem conexão',
             style: TextStyle(
-              fontWeight: FontWeight.w600,
               color: Colors.grey[600],
-              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+              fontSize: 15.0,
             ),
           ),
-          SizedBox(height: 10.0),
-          RaisedButton(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18.0),
+          SizedBox(height: 5.0),
+          Text(
+            'Verifique sua conexão e tente novamente.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.grey[600],
             ),
-            onPressed: () => retry(),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Tentar novamente',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                  ),
+          ),
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => retry(),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Text(
+                'Tentar novamente',
+                style: TextStyle(
+                  color: kPrimaryColor,
+                  fontWeight: FontWeight.w600,
                 ),
-                Icon(
-                  Icons.refresh,
-                  color: Colors.grey[600],
-                  size: 17.0,
-                ),
-              ],
+              ),
             ),
           ),
         ],

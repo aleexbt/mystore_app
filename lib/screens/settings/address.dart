@@ -113,7 +113,7 @@ class Address extends StatelessWidget {
                 size: 28.0,
               ),
               onPressed: () =>
-                  Navigator.pushNamed(context, '/settings/address_editor'),
+                  Navigator.pushNamed(context, '/settings/address/editor'),
             ),
           ),
         ],
@@ -140,7 +140,7 @@ class Address extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(
                       context,
-                      '/settings/address_editor',
+                      '/settings/address/editor',
                       arguments: item.address[index],
                     );
                   },

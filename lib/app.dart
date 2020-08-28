@@ -1,15 +1,18 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mystore/constants.dart';
+import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
+import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:mystore/helpers/notification_helper.dart';
 import 'package:mystore/screens/auth/login.dart';
+import 'package:mystore/screens/cart/index.dart';
 import 'package:mystore/screens/home.dart';
-import 'package:mystore/screens/categories.dart';
-//import 'package:mystore/screens/places_screen.dart';
-import 'package:mystore/screens/settings/settings.dart';
+import 'package:mystore/screens/settings/index.dart';
 import 'package:mystore/screens/my_orders.dart';
+import 'package:mystore/screens/products_navigator.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
@@ -21,8 +24,9 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  PageController _pageController = PageController();
+  PageController _pageController = NavKey.pageController;
   int _selectedIndex = 0;
+  int productCount = 0;
 
   void onPageChanged(int index) {
     setState(() {
@@ -51,9 +55,10 @@ class _AppState extends State<App> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    String userId = Provider.of<UserModel>(context).userData?.id ?? null;
+    String userId =
+        Provider.of<UserModel>(context, listen: false).userData?.id ?? null;
     NotificationHelper().initOneSignal(userId: userId);
   }
 
@@ -67,10 +72,11 @@ class _AppState extends State<App> {
         onPageChanged: onPageChanged,
         children: <Widget>[
           Home(),
-          Categories(),
+          ProductsNavigator(),
           // Places(),
           MyOrders(),
-          model.isLoggedIn ? Settings() : Login(),
+          CartNavigator(),
+          model.isLoggedIn ? SettingsNavigator() : Login(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -89,7 +95,7 @@ class _AppState extends State<App> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.category),
-            title: Text('Categorias'),
+            title: Text('Produtos'),
           ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.store),
@@ -100,8 +106,23 @@ class _AppState extends State<App> {
             title: Text('Pedidos'),
           ),
           BottomNavigationBarItem(
+            icon: context.watch<CartModel>().productCount == 0
+                ? Icon(Icons.shopping_cart)
+                : Badge(
+                    badgeContent: Text(
+                      context.watch<CartModel>().productCount.toString(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                    child: Icon(Icons.shopping_cart),
+                  ),
+            title: Text('Carrinho'),
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
-            title: Text('Perfil'),
+            title: Text('Sua Conta'),
           )
         ],
         currentIndex: _selectedIndex,

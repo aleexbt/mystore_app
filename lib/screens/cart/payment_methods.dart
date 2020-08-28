@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
+import 'package:mystore/controllers/global.dart';
 import 'package:mystore/controllers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
@@ -11,20 +12,39 @@ import 'package:edge_alert/edge_alert.dart';
 import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
-class PaymentMethods extends StatelessWidget {
+class PaymentMethods extends StatefulWidget {
   final data;
   //final _changeController = MaskedTextController(mask: '00,00');
+
+  PaymentMethods({this.data});
+
+  @override
+  _PaymentMethodsState createState() => _PaymentMethodsState();
+}
+
+class _PaymentMethodsState extends State<PaymentMethods> {
   final _changeController =
       MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.');
+
   MaskTextInputFormatter changeFormatter =
       MaskTextInputFormatter(mask: '###,##', filter: {"#": RegExp(r'[0-9]')});
   final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
-  PaymentMethods({this.data});
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // @override
+  // void didChangeDependencies() async {
+  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //     context.read<Global>().setBottomBar = false;
+  //   });
+  //   super.didChangeDependencies();
+  // }
+
   @override
   Widget build(BuildContext context) {
     //_changeController.text = '0,00';
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Formas de pagamento'),
       ),
@@ -104,7 +124,7 @@ class PaymentMethods extends StatelessWidget {
               GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () =>
-                    Navigator.pushNamed(context, '/settings/payment_editor'),
+                    Navigator.pushNamed(context, '/settings/payment/editor'),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                   child: Row(
@@ -295,7 +315,7 @@ class PaymentMethods extends StatelessWidget {
                   ),
                   SizedBox(height: 10.0),
                   Text(
-                    'O valor do seu pedido é ${currency.format(data['data'] / 100)}',
+                    'O valor do seu pedido é ${currency.format(widget.data['data'] / 100)}',
                     style: TextStyle(
                       color: Colors.grey[500],
                     ),
@@ -380,7 +400,7 @@ class PaymentMethods extends StatelessWidget {
   }
 
   void setChage(context) {
-    int total = data['data'];
+    int total = widget.data['data'];
     int change =
         int.parse(_changeController.text.replaceAll(RegExp("[^0-9]+"), ''));
     if (change > total) {
@@ -405,7 +425,7 @@ class PaymentMethods extends StatelessWidget {
         return AlertDialog(
           title: Text('Troco inválido'),
           content: Text(
-              'Você deve pedir troco para um valor maior que ${currency.format(data['data'] / 100)}.'),
+              'Você deve pedir troco para um valor maior que ${currency.format(widget.data['data'] / 100)}.'),
           actions: <Widget>[
             // define os botões na base do dialogo
             FlatButton(
@@ -430,7 +450,7 @@ class PaymentMethods extends StatelessWidget {
       context,
       title: 'Troco inválido',
       description:
-          'Você deve pedir troco para um valor maior que ${currency.format(data['data'] / 100)}.',
+          'Você deve pedir troco para um valor maior que ${currency.format(widget.data['data'] / 100)}.',
       gravity: EdgeAlert.TOP,
       backgroundColor: Colors.grey[800],
       duration: 4,

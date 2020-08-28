@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/helpers/user_functions.dart';
 import 'package:mystore/models/user_model.dart';
@@ -24,6 +25,13 @@ class _SplashScreenState extends State<SplashScreen> {
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     //   launchPrefs();
     // });
+  }
+
+  @override
+  void didChangeDependencies() async {
+    await precachePicture(
+        SvgPicture.asset('assets/disconnected.svg').pictureProvider, context);
+    super.didChangeDependencies();
   }
 
   void launchPrefs() async {
@@ -51,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Provider.of<UserModel>(context, listen: false).token = _token;
         Provider.of<UserModel>(context, listen: false).setUserData(userData);
         Provider.of<UserModel>(context, listen: false).setLoggedIn = true;
-        Provider.of<CartModel>(context, listen: false).loadCart();
+        await Provider.of<CartModel>(context, listen: false).loadCart();
         Navigator.pushReplacementNamed(context, '/app');
       } else {
         debugPrint('Usuario não autenticado');

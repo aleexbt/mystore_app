@@ -18,6 +18,7 @@ class CartModel extends ChangeNotifier {
   int totalItems = 0;
   String _selectedShipping;
   int _shippingPrice = 0;
+  bool _shippingCalcError = false;
   String selectedCard;
 
 // Checkout payment methods: 1 Credit Card, 2 Cash, 3 Debit
@@ -46,6 +47,13 @@ class CartModel extends ChangeNotifier {
   }
 
   get shippingPrice => _shippingPrice;
+
+  set setShippingCalcError(bool value) {
+    _shippingCalcError = value;
+    notifyListeners();
+  }
+
+  get shippingCalcError => _shippingCalcError;
 
   set onlinePayment(bool value) {
     _onlinePayment = value;
@@ -169,7 +177,7 @@ class CartModel extends ChangeNotifier {
     }
   }
 
-  void loadCart() async {
+  Future<void> loadCart() async {
     try {
       var data = await _readData();
       List<String> productIds = [];
@@ -194,7 +202,7 @@ class CartModel extends ChangeNotifier {
     }
   }
 
-  Future<String> finishOrder(BuildContext context) async {
+  Future<Map<String, dynamic>> finishOrder(BuildContext context) async {
     if (products.length == 0) return null;
     isLoading = true;
     notifyListeners();
@@ -242,17 +250,14 @@ class CartModel extends ChangeNotifier {
       _selectedShipping = null;
       _paymentMethod = null;
       _paymentChange = 0;
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          '/cart/checkout/finish', (Route<dynamic> route) => false,
-          arguments: {'orderId': response.data['order']});
       notifyListeners();
       _saveData();
-      return null;
+      return {'success': true, 'orderId': response.data['order']};
     } else {
-      print(response.data['msg']);
+      // print(response.data['msg']);
       isLoading = false;
       notifyListeners();
-      return response.data['msg'];
+      return {'success': false, 'msg': response.data['msg']};
     }
   }
 }

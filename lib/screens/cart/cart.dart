@@ -3,19 +3,26 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:mystore/components/cart_price.dart';
 import 'package:mystore/components/discount_card.dart';
 import 'package:mystore/components/ship_card.dart';
+import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
+import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:mystore/tiles/cart_tile.dart';
 import 'package:provider/provider.dart';
 
 class Cart extends StatelessWidget {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
+    if (context.watch<CartModel>().shippingCalcError &&
+        !context.watch<CartModel>().apiLoading) {
+      _onFail('Erro ao calcular o frete, tente novamente mais tarde.');
+    }
     final cartModel = Provider.of<CartModel>(context);
     final bool selectedShipping =
         cartModel.selectedShipping != null && cartModel.selectedShipping != '';
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Meu carrinho'),
         actions: <Widget>[
@@ -52,10 +59,15 @@ class Cart extends StatelessWidget {
                     SizedBox(
                       height: 50.0,
                       child: RaisedButton(
-                        color: primaryColor,
+                        color: kPrimaryColor,
                         textColor: Colors.white,
                         onPressed: () {
-                          Navigator.pushNamed(context, '/auth/login');
+                          //Navigator.pushNamed(context, '/auth/login');
+                          NavKey.pageController.animateToPage(
+                            4,
+                            duration: Duration(milliseconds: 200),
+                            curve: Curves.linear,
+                          );
                         },
                         child: Text('Entre para adicionar items'),
                       ),
@@ -94,7 +106,8 @@ class Cart extends StatelessWidget {
                     }).toList(),
                   ),
                   DiscountCard(),
-                  ShipCard(),
+                  // ShipCard(),
+                  selectAddress(context),
                   CartPrice(products: data.products),
                   SizedBox(height: 12.0),
                   Padding(
@@ -102,14 +115,16 @@ class Cart extends StatelessWidget {
                     child: SizedBox(
                       height: 45.0,
                       child: RaisedButton(
-                        onPressed: selectedShipping
+                        onPressed: selectedShipping &&
+                                !context.watch<CartModel>().shippingCalcError
                             ? () {
-                                Navigator.pushNamed(context, '/cart/checkout');
+                                Navigator.pushNamed(context, '/checkout');
                               }
                             : null,
                         color: Color.fromARGB(255, 211, 110, 130),
                         textColor: Colors.white,
-                        child: Text(selectedShipping
+                        child: Text(selectedShipping &&
+                                !context.watch<CartModel>().shippingCalcError
                             ? 'CONTINUAR'
                             : 'Selecione um endereço'),
                       ),
@@ -123,5 +138,82 @@ class Cart extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  GestureDetector selectAddress(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        Navigator.pushNamed(context, '/select_address');
+      },
+      child: Container(
+        //padding: EdgeInsets.all(8.0),
+        margin: EdgeInsets.only(left: 8, right: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey[300],
+            width: 0.5,
+          ),
+          borderRadius: BorderRadius.circular(4.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[300],
+              // spreadRadius: 1,
+              blurRadius: 0,
+              offset: Offset(0.0, 0.5), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10.0, 18.0, 10.0, 18.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 6.0, right: 30.0),
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      Text(
+                        'Endereço de entrega',
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 16.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    'Escolher',
+                    style: TextStyle(
+                      color: kPrimaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onFail(String msg) async {
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 3),
+      ),
+    );
+    await Future.delayed(Duration(seconds: 2));
   }
 }

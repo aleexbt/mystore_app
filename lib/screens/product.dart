@@ -6,6 +6,7 @@ import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
 import 'package:mystore/datas/cart_product.dart';
 import 'package:mystore/datas/product_data.dart';
+import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -132,16 +133,21 @@ class _ProductState extends State<Product> {
                           textColor: Colors.white,
                           onPressed: size != null
                               ? () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/auth/login',
-                                    arguments: 1,
+                                  // Navigator.pushNamed(
+                                  //   context,
+                                  //   '/auth/login',
+                                  //   arguments: 1,
+                                  // );
+                                  NavKey.pageController.animateToPage(
+                                    4,
+                                    duration: Duration(milliseconds: 200),
+                                    curve: Curves.linear,
                                   );
                                 }
                               : null,
                           child: Text(
                             'Adicionar ao carrinho',
-                            style: TextStyle(fontSize: 18.0),
+                            style: TextStyle(fontSize: 14.0),
                           ),
                         ),
                       );
@@ -165,8 +171,14 @@ class _ProductState extends State<Product> {
                                 //CartController.to.addCartItem(cartProduct);
                                 Provider.of<CartModel>(context, listen: false)
                                     .addCartItem(cartProduct);
-                                Navigator.pushReplacementNamed(
-                                    context, '/cart');
+                                // Navigator.pushReplacementNamed(
+                                //     context, '/cart');
+                                // NavKey.pageController.animateToPage(
+                                //   3,
+                                //   duration: Duration(milliseconds: 200),
+                                //   curve: Curves.linear,
+                                // );
+                                NavKey.pageController.jumpToPage(3);
                               }
                             : null,
                         child: Text(

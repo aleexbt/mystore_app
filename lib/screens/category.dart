@@ -1,13 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:mystore/datas/product_data.dart';
+import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/services/api.dart';
 import 'package:mystore/tiles/product_tile.dart';
 
-class Category extends StatelessWidget {
+class Category extends StatefulWidget {
   final args;
-  //final String catId;
-
   Category(this.args);
+
+  @override
+  _CategoryState createState() => _CategoryState();
+}
+
+class _CategoryState extends State<Category> {
+  Future _getCategoryProducts;
+  bool networkError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCategoryProducts = getCategoryProducts();
+  }
+
+  Future getCategoryProducts() async {
+    var response = await Api.productsByCategory(widget.args['catId']);
+    if (response == null) {
+      setState(() {
+        networkError = true;
+      });
+      debugPrint('Erro no carregamento');
+      return null;
+    } else {
+      return response;
+    }
+  }
+
+  Future retry() async {
+    setState(() {
+      networkError = false;
+    });
+    _getCategoryProducts = getCategoryProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +49,7 @@ class Category extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            args['catName'],
+            widget.args['catName'],
           ),
           bottom: TabBar(
             indicatorColor: Colors.grey[400],
@@ -37,13 +70,16 @@ class Category extends StatelessWidget {
           ),
         ),
         body: FutureBuilder(
-            future: Api.productsByCategory(args['catId']),
+            future: _getCategoryProducts,
             builder: (context, snapshot) {
+              if (networkError) {
+                return NetworkError(retry);
+              }
               if (!snapshot.hasData) {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
-              } else if (snapshot.data.data.length == 0) {
+              } else if (snapshot.data.length == 0) {
                 return Padding(
                   padding: const EdgeInsets.all(25.0),
                   child: Center(
@@ -78,20 +114,20 @@ class Category extends StatelessWidget {
                         mainAxisSpacing: 4.0,
                         childAspectRatio: 0.65,
                       ),
-                      itemCount: snapshot.data.data.length,
+                      itemCount: snapshot.data.length,
                       itemBuilder: (context, index) {
                         ProductData data = ProductData.fromMap(
-                          snapshot.data.data[index],
+                          snapshot.data[index],
                         );
                         return ProductTile('grid', data);
                       },
                     ),
                     ListView.builder(
                       padding: EdgeInsets.all(4.0),
-                      itemCount: snapshot.data.data.length,
+                      itemCount: snapshot.data.length,
                       itemBuilder: (context, index) {
                         ProductData data = ProductData.fromMap(
-                          snapshot.data.data[index],
+                          snapshot.data[index],
                         );
                         return ProductTile('list', data);
                       },

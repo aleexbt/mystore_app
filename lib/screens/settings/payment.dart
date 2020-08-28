@@ -65,7 +65,7 @@ class Payment extends StatelessWidget {
                 size: 28.0,
               ),
               onPressed: () =>
-                  Navigator.pushNamed(context, '/settings/payment_editor'),
+                  Navigator.pushNamed(context, '/settings/payment/editor'),
             ),
           ),
         ],
@@ -88,7 +88,7 @@ class Payment extends StatelessWidget {
                       onTap: () {
                         Navigator.pushNamed(
                           context,
-                          '/settings/payment_editor',
+                          '/settings/payment/editor',
                           arguments: cards[index],
                         );
                       },

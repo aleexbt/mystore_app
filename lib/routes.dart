@@ -53,7 +53,7 @@ class RouteGenerator {
         return CupertinoPageRoute(
           builder: (_) => Address(),
         );
-      case '/settings/address_editor':
+      case '/settings/address/editor':
         return CupertinoPageRoute(
           builder: (_) => AddressEditor(addressData: args),
           fullscreenDialog: true,
@@ -62,7 +62,7 @@ class RouteGenerator {
         return CupertinoPageRoute(
           builder: (_) => Payment(),
         );
-      case '/settings/payment_editor':
+      case '/settings/payment/editor':
         return CupertinoPageRoute(
           builder: (_) => PaymentEditor(creditCardData: args),
           fullscreenDialog: true,
@@ -71,11 +71,11 @@ class RouteGenerator {
         return CupertinoPageRoute(
           builder: (_) => Profile(profileData: args),
         );
-      case '/settings/change_password':
+      case '/settings/profile/change_password':
         return CupertinoPageRoute(
           builder: (_) => ChangePassword(),
         );
-      case '/cart/payment_methods':
+      case '/payment_methods':
         return CupertinoPageRoute(
           builder: (_) => PaymentMethods(data: args),
           fullscreenDialog: false,
@@ -92,7 +92,7 @@ class RouteGenerator {
           title: Text('Erro'),
         ),
         body: Center(
-          child: Text('Ops, ocorreu um erro.'),
+          child: Text('Ops, não conseguimos encontrar esta página.'),
         ),
       );
     });

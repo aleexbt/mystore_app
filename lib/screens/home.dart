@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mystore/components/image_loader.dart';
-import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/services/api.dart';
-import 'package:badges/badges.dart';
-import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -27,7 +24,9 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
   Future getConfig() async {
     var response = await Api.appConfig();
     if (response == null) {
-      networkError = true;
+      setState(() {
+        networkError = true;
+      });
       debugPrint('Erro no carregamento');
       return null;
     } else {
@@ -39,14 +38,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
     setState(() {
       networkError = false;
     });
-    var response = await Api.appConfig();
-    if (response == null) {
-      networkError = true;
-      debugPrint('Erro no carregamento');
-      return null;
-    } else {
-      return response;
-    }
+    _getConfig = getConfig();
   }
 
   @override
@@ -89,26 +81,6 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
                   ),
                   titlePadding: EdgeInsets.all(15.0),
                 ),
-                actions: [
-                  GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, '/cart'),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0, right: 20.0),
-                      child: Badge(
-                        badgeContent: Text(
-                          Provider.of<CartModel>(context)
-                              .productCount
-                              .toString(),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                        child: Icon(Icons.shopping_cart),
-                      ),
-                    ),
-                  ),
-                ],
               ),
               FutureBuilder(
                 future: _getConfig,

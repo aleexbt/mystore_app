@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
+import 'package:mystore/controllers/global.dart';
 import 'package:mystore/controllers/user_provider.dart';
 import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:mystore/routes.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => Global()),
         ChangeNotifierProvider(create: (context) => UserModel()),
         ChangeNotifierProvider(create: (context) => CartModel())
       ],

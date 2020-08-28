@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mystore/constants.dart';
+import 'package:mystore/helpers/navigation_helper.dart';
 
 class FinishOrder extends StatelessWidget {
   final args;
@@ -42,9 +43,14 @@ class FinishOrder extends StatelessWidget {
                 color: kPrimaryColor,
                 textColor: Colors.white,
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/app', (route) => false,
-                      arguments: 2);
+                  // Navigator.pushNamedAndRemoveUntil(
+                  //     context, '/app', (route) => false,
+                  //     arguments: 2);
+                  NavKey.pageController.animateToPage(
+                    2,
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.linear,
+                  );
                 },
                 child: Text('Ir para meus pedidos'),
               ),

@@ -20,28 +20,36 @@ class _ShipCardState extends State<ShipCard> {
     _selectedAddress = currentAddress ?? null;
   }
 
-  Future<Map<String, dynamic>> checkShipping() async {
+  Future<Map<String, dynamic>> checkShipping(BuildContext context) async {
     UserAddress address = Provider.of<UserModel>(context, listen: false)
         .userData
         .address
         .firstWhere((element) => element.id == _selectedAddress, orElse: null);
     if (address != null) {
-      Provider.of<CartModel>(context, listen: false).setApiLoading = true;
-      var response = await Api.calculateShipping(address.zipcode);
-      if (response['success']) {
-        var price = response['response']['sedex']['Valor']
-            .replaceAll(RegExp("[^0-9]+"), '');
-        // var delivery = response['response']['sedex']['PrazoEntrega'];
-        Provider.of<CartModel>(context, listen: false).setShippingPrice =
-            int.parse(price);
-        Provider.of<CartModel>(context, listen: false).setApiLoading = false;
-        return response;
-      } else {
-        Provider.of<CartModel>(context, listen: false).setApiLoading = false;
+      try {
+        Provider.of<CartModel>(context, listen: false).setApiLoading = true;
+        var response = await Api.calculateShipping(address.zipcode);
+        if (response['success']) {
+          var price = response['response']['sedex']['Valor']
+              .replaceAll(RegExp("[^0-9]+"), '');
+          // var delivery = response['response']['sedex']['PrazoEntrega'];
+          // context.read<CartModel>().setShippingPrice = int.parse(price);
+          Provider.of<CartModel>(context, listen: false).setApiLoading = false;
+          // context.read<CartModel>().setShippingCalcError = false;
+          return response;
+        } else {
+          // context.read<CartModel>().setShippingCalcError = true;
+          // context.read<CartModel>().setApiLoading = false;
+          return null;
+        }
+      } catch (err) {
+        debugPrint('Erro ao calcular frete: $err');
+        // context.read<CartModel>().setShippingCalcError = true;
+        // context.read<CartModel>().setApiLoading = false;
         return null;
       }
     } else {
-      Provider.of<CartModel>(context, listen: false).setApiLoading = false;
+      context.read<CartModel>().setApiLoading = false;
       return null;
     }
   }
@@ -70,7 +78,7 @@ class _ShipCardState extends State<ShipCard> {
                 SizedBox(height: 10.0),
                 RaisedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/settings/address_editor');
+                    Navigator.pushNamed(context, '/settings/address/editor');
                   },
                   child: Text('Adicionar endereço'),
                 ),
@@ -103,7 +111,7 @@ class _ShipCardState extends State<ShipCard> {
                             setState(() {
                               _selectedAddress = item.address[index].id;
                             });
-                            checkShipping();
+                            checkShipping(context);
                           },
                           leading: Radio(
                               visualDensity: VisualDensity.compact,
@@ -117,7 +125,7 @@ class _ShipCardState extends State<ShipCard> {
                                 setState(() {
                                   _selectedAddress = value;
                                 });
-                                checkShipping();
+                                checkShipping(context);
                               }),
                           title: Text(
                             street + number + complement,

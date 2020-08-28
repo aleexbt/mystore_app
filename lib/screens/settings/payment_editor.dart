@@ -339,7 +339,7 @@ class _PaymentEditorState extends State<PaymentEditor> {
                 GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: () =>
-                      Navigator.pushNamed(context, '/settings/address_editor'),
+                      Navigator.pushNamed(context, '/settings/address/editor'),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Align(

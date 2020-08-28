@@ -6,15 +6,23 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
+import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:mystore/helpers/user_functions.dart';
 import 'package:mystore/models/user_model.dart';
 import 'package:provider/provider.dart';
-
 import 'package:intl/intl.dart';
 
-class Checkout extends StatelessWidget {
+class Checkout extends StatefulWidget {
+  @override
+  _CheckoutState createState() => _CheckoutState();
+}
+
+class _CheckoutState extends State<Checkout> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+  bool _isLoading = false;
+  bool _isFinished = false;
+  String _orderId;
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +32,60 @@ class Checkout extends StatelessWidget {
         title: Text('Resumo do pedido'),
       ),
       body: ModalProgressHUD(
-        inAsyncCall: Provider.of<CartModel>(context).isLoading,
+        inAsyncCall: _isLoading,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.all(8.0),
             child: Consumer2<CartModel, UserModel>(
                 builder: (context, data, userdata, child) {
-              if (data.products.length == 0) {
-                return Container();
+              if (_isFinished) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.height / 4),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.check,
+                          color: Colors.teal,
+                          size: 80.0,
+                        ),
+                        Text(
+                          'Pedido realizado com sucesso!',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        Text(
+                          'Código do pedido: $_orderId',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        SizedBox(height: 16.0),
+                        SizedBox(
+                          height: 50.0,
+                          child: RaisedButton(
+                            color: kPrimaryColor,
+                            textColor: Colors.white,
+                            onPressed: () {
+                              NavKey.pageController.animateToPage(
+                                2,
+                                duration: Duration(milliseconds: 200),
+                                curve: Curves.linear,
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: Text('Ir para meus pedidos'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               }
               UserAddress address = userdata.userData.address
                   .firstWhere((element) => element.id == data.selectedShipping);
@@ -247,20 +301,35 @@ class Checkout extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        onPressed:
-                            Provider.of<CartModel>(context).paymentMethod !=
-                                    null
-                                ? () async {
-                                    String resCheckout =
-                                        await Provider.of<CartModel>(context,
-                                                listen: false)
-                                            .finishOrder(context);
+                        onPressed: Provider.of<CartModel>(context)
+                                    .paymentMethod !=
+                                null
+                            ? () async {
+                                setState(() {
+                                  _isLoading = true;
+                                });
 
-                                    if (resCheckout != null) {
-                                      _checkoutError2(context, resCheckout);
-                                    }
-                                  }
-                                : null,
+                                Map<String, dynamic> resCheckout =
+                                    await Provider.of<CartModel>(context,
+                                            listen: false)
+                                        .finishOrder(context);
+
+                                if (resCheckout['success']) {
+                                  setState(() {
+                                    _orderId = resCheckout['orderId'];
+                                    _isFinished = true;
+                                    _isLoading = false;
+                                  });
+                                  NavKey.productsKey.currentState.pop();
+                                  NavKey.productsKey.currentState.pop();
+                                } else {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  _checkoutError2(context, resCheckout['msg']);
+                                }
+                              }
+                            : null,
                         color: Color.fromARGB(255, 211, 110, 130),
                         textColor: Colors.white,
                         child: Text('FINALIZAR COMPRA'),
@@ -280,10 +349,12 @@ class Checkout extends StatelessWidget {
       BuildContext context, int prices, int ship, int discount) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () =>
-          Navigator.pushNamed(context, '/cart/payment_methods', arguments: {
-        'data': (prices + ship - discount),
-      }),
+      onTap: () {
+        Navigator.of(context, rootNavigator: true)
+            .pushNamed('/payment_methods', arguments: {
+          'data': (prices + ship - discount),
+        });
+      },
       child: Container(
         padding: EdgeInsets.all(8.0),
         child: Column(
@@ -299,7 +370,7 @@ class Checkout extends StatelessWidget {
                     'Escolher',
                     style: TextStyle(
                       color: kPrimaryColor,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -316,10 +387,15 @@ class Checkout extends StatelessWidget {
       BuildContext context, int prices, int ship, int discount) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () =>
-          Navigator.pushNamed(context, '/cart/payment_methods', arguments: {
-        'data': (prices + ship - discount),
-      }),
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          '/payment_methods',
+          arguments: {
+            'data': (prices + ship - discount),
+          },
+        );
+      },
       child: Container(
         padding: EdgeInsets.all(8.0),
         child: Column(
@@ -350,7 +426,7 @@ class Checkout extends StatelessWidget {
                         'Trocar',
                         style: TextStyle(
                           color: kPrimaryColor,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -423,17 +499,6 @@ class Checkout extends StatelessWidget {
       }
     }
   }
-
-  // void _checkoutError(String msg) async {
-  //   _scaffoldKey.currentState.showSnackBar(
-  //     SnackBar(
-  //       content: Text(msg),
-  //       backgroundColor: Colors.red,
-  //       duration: Duration(seconds: 6),
-  //     ),
-  //   );
-  //   await Future.delayed(Duration(seconds: 6));
-  // }
 
   void _checkoutError2(context, String msg) {
     EdgeAlert.show(

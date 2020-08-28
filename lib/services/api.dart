@@ -25,26 +25,30 @@ final _dioCacheManager = DioCacheManager(CacheConfig());
 
 class Api {
   static Future<String> getToken() async {
-    final SharedPreferences prefs = await _prefs;
-    Map<String, dynamic> payload = Jwt.parseJwt(prefs.get('token'));
-    Future<String> secureToken = _storage.read(key: 'secure_token');
-    String _secureToken = await secureToken;
-    int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    String _token = prefs.get('token');
+    try {
+      final SharedPreferences prefs = await _prefs;
+      Map<String, dynamic> payload = Jwt.parseJwt(prefs.get('token'));
+      Future<String> secureToken = _storage.read(key: 'secure_token');
+      String _secureToken = await secureToken;
+      int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      String _token = prefs.get('token');
 
-    if (payload['exp'] < currentTime) {
-      dio.options.headers["Authorization"] = '$_token';
-      dio.options.headers["token"] = '$_secureToken';
-      Response response = await dio.post(baseUrl + '/token');
-      if (response.data['success']) {
-        debugPrint('REFRESH_TOKEN_SUCCESS');
-        prefs.setString('token', response.data['token']);
-        _token = response.data['token'];
-      } else {
-        debugPrint('REFRESH_TOKEN_FAIL');
+      if (payload['exp'] < currentTime) {
+        dio.options.headers["Authorization"] = '$_token';
+        dio.options.headers["token"] = '$_secureToken';
+        Response response = await dio.post(baseUrl + '/token');
+        if (response.data['success']) {
+          debugPrint('REFRESH_TOKEN_SUCCESS');
+          prefs.setString('token', response.data['token']);
+          _token = response.data['token'];
+        } else {
+          debugPrint('REFRESH_TOKEN_FAIL');
+        }
       }
+      return _token;
+    } catch (err) {
+      return null;
     }
-    return _token;
   }
 
   static Future appConfig() async {
@@ -82,13 +86,33 @@ class Api {
 
   static Future getCategories() async {
     dio.interceptors.add(_dioCacheManager.interceptor);
-    Response response = await dio.get(baseUrl + '/categories');
-    return response;
+    try {
+      Response response = await dio.get(baseUrl + '/categories');
+      return response.data;
+    } on DioError catch (e) {
+      if (e.response != null) {
+        return null;
+      } else {
+        debugPrint(e.request.toString());
+        debugPrint(e.message);
+        return null;
+      }
+    }
   }
 
   static Future productsByCategory(String id) async {
-    Response response = await dio.get(baseUrl + '/categories/$id');
-    return response;
+    try {
+      Response response = await dio.get(baseUrl + '/categories/$id');
+      return response.data;
+    } on DioError catch (e) {
+      if (e.response != null) {
+        return null;
+      } else {
+        debugPrint(e.request.toString());
+        debugPrint(e.message);
+        return null;
+      }
+    }
   }
 
   static Future productById(String id) async {
