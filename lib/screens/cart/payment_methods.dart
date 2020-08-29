@@ -46,7 +46,12 @@ class _PaymentMethodsState extends State<PaymentMethods> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Formas de pagamento'),
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('FORMAS DE PAGAMENTO'),
       ),
       body: SafeArea(
         child: Padding(

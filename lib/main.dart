@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
@@ -23,6 +24,11 @@ Future<void> main() async {
   Hive.init(dir.path);
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(UserAddressAdapter());
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+  ));
   runApp(MyApp());
 }
 
@@ -59,25 +65,31 @@ class MyApp extends StatelessWidget {
           title: 'MyStore',
           theme: ThemeData(
             appBarTheme: AppBarTheme(
-                elevation: 0.5,
+              centerTitle: true,
+              elevation: 0.5,
+              color: Colors.white,
+              iconTheme: IconThemeData(
                 color: kPrimaryColor,
-                iconTheme: IconThemeData(
-                  color: Colors.white,
+              ),
+              textTheme: TextTheme(
+                headline6: TextStyle(
+                  fontFamily: 'SulSans',
+                  color: Colors.black,
+                  fontSize: 16.0,
                 ),
-                textTheme: TextTheme(
-                  headline6: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                  ),
-                )),
-            //primaryColor: Color.fromARGB(255, 211, 110, 130),
-            primaryColor: Colors.grey[50],
-            accentColor: Color.fromARGB(255, 211, 110, 130),
-            textSelectionHandleColor: kPrimaryColor,
-            toggleableActiveColor: kPrimaryColor,
-            cursorColor: Colors.grey[500],
-            visualDensity: VisualDensity.adaptivePlatformDensity,
+              ),
+            ),
             fontFamily: 'SulSans',
+            brightness: Brightness.light,
+            scaffoldBackgroundColor: Colors.white,
+            primaryColor: kPrimaryColor,
+            accentColor: kPrimaryColor,
+            textSelectionHandleColor: kPrimaryColor,
+            primarySwatch: Colors.grey,
+            bottomNavigationBarTheme: BottomNavigationBarThemeData(
+              backgroundColor: Colors.white,
+              type: BottomNavigationBarType.fixed,
+            ),
             pageTransitionsTheme: const PageTransitionsTheme(
               builders: {
                 TargetPlatform.android: ZoomPageTransitionsBuilder(),
@@ -86,17 +98,48 @@ class MyApp extends StatelessWidget {
               },
             ),
           ),
-          darkTheme: ThemeData.dark().copyWith(
-            // primaryColor: Color.fromARGB(255, 211, 110, 130),
-            accentColor: Color.fromARGB(255, 211, 110, 130),
+          darkTheme: ThemeData(
+            appBarTheme: AppBarTheme(
+              elevation: 0.0,
+              color: Colors.white,
+              iconTheme: IconThemeData(
+                color: Colors.black,
+              ),
+              textTheme: TextTheme(
+                headline6: TextStyle(
+                  fontFamily: 'SulSans',
+                  color: Colors.black,
+                  fontSize: 22.0,
+                ),
+              ),
+            ),
+            fontFamily: 'SulSans',
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: Colors.white,
+            primaryColor: Colors.white,
+            accentColor: kPrimaryColor,
             textSelectionHandleColor: kPrimaryColor,
-            toggleableActiveColor: kPrimaryColor,
-            cursorColor: Colors.white,
-            accentIconTheme: IconThemeData(color: Colors.white),
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            textTheme: ThemeData.dark().textTheme.apply(
-                  bodyColor: Colors.white,
-                  displayColor: Colors.white,
+            hintColor: Colors.grey[600],
+            cardTheme: CardTheme(
+              color: Colors.white,
+            ),
+            iconTheme: ThemeData.light().iconTheme.copyWith(
+                  color: Colors.grey[700],
+                ),
+            textTheme: ThemeData.dark().textTheme.copyWith(
+                  bodyText1: TextStyle(color: Colors.black),
+                  bodyText2: TextStyle(color: Colors.black),
+                ),
+            dividerColor: Colors.grey[400],
+            buttonTheme: ThemeData.light().buttonTheme.copyWith(
+                  disabledColor: Colors.grey[400],
+                ),
+            bottomNavigationBarTheme: BottomNavigationBarThemeData(
+              backgroundColor: Colors.white,
+              type: BottomNavigationBarType.fixed,
+            ),
+            bottomSheetTheme: ThemeData.light().bottomSheetTheme.copyWith(
+                  backgroundColor: Colors.white,
                 ),
             pageTransitionsTheme: const PageTransitionsTheme(
               builders: {

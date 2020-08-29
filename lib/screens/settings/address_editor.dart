@@ -102,7 +102,7 @@ class _AddressEditorState extends State<AddressEditor> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            widget.addressData == null ? 'Novo endereço' : 'Editar endereço'),
+            widget.addressData == null ? 'NOVO ENDEREÇO' : 'EDITAR ENDEREÇO'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 5.0),

@@ -48,7 +48,7 @@ class _CategoriesState extends State<Categories>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Categorias'),
+        title: Text('CATEGORIAS'),
       ),
       body: FutureBuilder(
         future: _getCategories,

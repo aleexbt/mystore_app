@@ -103,7 +103,12 @@ class Address extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meus endereços'),
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('MEUS ENDEREÇOS'),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 5.0),

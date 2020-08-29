@@ -170,8 +170,8 @@ class _PaymentEditorState extends State<PaymentEditor> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.creditCardData != null
-            ? 'Editar cartão'
-            : 'Adicionar cartão'),
+            ? 'EDITAR CARTÃO'
+            : 'ADICIONAR CARTÃO'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 5.0),

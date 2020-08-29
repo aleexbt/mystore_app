@@ -55,7 +55,12 @@ class Payment extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Formas de pagamento'),
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('FORMAS DE PAGAMENTO'),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 5.0),

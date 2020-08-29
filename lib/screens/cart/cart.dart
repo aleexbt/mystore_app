@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:mystore/components/cart_price.dart';
 import 'package:mystore/components/discount_card.dart';
-import 'package:mystore/components/ship_card.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
@@ -24,7 +23,7 @@ class Cart extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Meu carrinho'),
+        title: Text('MEU CARRINHO'),
         actions: <Widget>[
           Container(
             alignment: Alignment.center,
@@ -115,6 +114,9 @@ class Cart extends StatelessWidget {
                     child: SizedBox(
                       height: 45.0,
                       child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                         onPressed: selectedShipping &&
                                 !context.watch<CartModel>().shippingCalcError
                             ? () {

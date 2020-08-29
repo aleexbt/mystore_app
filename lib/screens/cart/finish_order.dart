@@ -10,7 +10,7 @@ class FinishOrder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pedido realizado"),
+        title: Text("PEDIDO REALIZADO"),
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),

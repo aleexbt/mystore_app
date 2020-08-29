@@ -31,6 +31,11 @@ class _ProductState extends State<Product> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(product.title),
       ),
       body: ListView(
@@ -127,8 +132,11 @@ class _ProductState extends State<Product> {
                   builder: (context, data, child) {
                     if (!data.isLoggedIn) {
                       return SizedBox(
-                        height: 50.0,
+                        height: 45.0,
                         child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
                           color: kPrimaryColor,
                           textColor: Colors.white,
                           onPressed: size != null
@@ -147,14 +155,16 @@ class _ProductState extends State<Product> {
                               : null,
                           child: Text(
                             'Adicionar ao carrinho',
-                            style: TextStyle(fontSize: 14.0),
                           ),
                         ),
                       );
                     }
                     return SizedBox(
-                      height: 50.0,
+                      height: 45.0,
                       child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                         color: kPrimaryColor,
                         textColor: Colors.white,
                         onPressed: size != null
@@ -183,7 +193,6 @@ class _ProductState extends State<Product> {
                             : null,
                         child: Text(
                           'Adicionar ao carrinho',
-                          style: TextStyle(fontSize: 18.0),
                         ),
                       ),
                     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mystore/constants.dart';
 import 'package:mystore/datas/product_data.dart';
 import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/models/network_model.dart';
@@ -50,13 +51,18 @@ class _CategoryState extends State<Category> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: () => Navigator.pop(context),
+          ),
           title: Text(
-            widget.args['catName'],
+            widget.args['catName'].toUpperCase(),
           ),
           bottom: TabBar(
-            indicatorColor: Colors.grey[400],
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey[300],
+            indicatorColor: kPrimaryColor,
+            labelColor: Colors.grey[800],
+            unselectedLabelColor: Colors.grey[400],
             tabs: <Widget>[
               Tab(
                 icon: Icon(

@@ -105,7 +105,7 @@ class _MyOrdersState extends State<MyOrders>
     UserModel userModel = Provider.of<UserModel>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meus pedidos'),
+        title: Text('MEUS PEDIDOS'),
       ),
       body: networkError
           ? NetworkError(retry, statusCode: networkStatusCode)

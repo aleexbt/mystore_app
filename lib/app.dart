@@ -46,8 +46,8 @@ class _AppState extends State<App> {
     super.initState();
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      // statusBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
     ));
     if (widget.redirectPage != null) {
       redirect(widget.redirectPage);
@@ -81,11 +81,10 @@ class _AppState extends State<App> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 5,
-        backgroundColor: kPrimaryColor,
         unselectedFontSize: 10,
         selectedFontSize: 10,
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: kPrimaryColor,
+        unselectedItemColor: Colors.grey[500],
+        selectedItemColor: Colors.grey[800],
         showSelectedLabels: true,
         showUnselectedLabels: true,
         items: <BottomNavigationBarItem>[
@@ -109,11 +108,12 @@ class _AppState extends State<App> {
             icon: context.watch<CartModel>().productCount == 0
                 ? Icon(Icons.shopping_cart)
                 : Badge(
+                    badgeColor: kPrimaryColor,
                     badgeContent: Text(
                       context.watch<CartModel>().productCount.toString(),
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12.0,
+                        fontSize: 10.0,
                       ),
                     ),
                     child: Icon(Icons.shopping_cart),

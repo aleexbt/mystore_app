@@ -79,7 +79,12 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Meus dados'),
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('MEUS DADOS'),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 5.0),

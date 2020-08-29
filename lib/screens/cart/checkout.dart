@@ -29,7 +29,12 @@ class _CheckoutState extends State<Checkout> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Resumo do pedido'),
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('RESUMO DO PEDIDO'),
       ),
       body: ModalProgressHUD(
         inAsyncCall: _isLoading,
@@ -388,8 +393,7 @@ class _CheckoutState extends State<Checkout> {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        Navigator.pushNamed(
-          context,
+        Navigator.of(context, rootNavigator: true).pushNamed(
           '/payment_methods',
           arguments: {
             'data': (prices + ship - discount),
