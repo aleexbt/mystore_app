@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mystore/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserFunctions {
@@ -8,7 +9,7 @@ class UserFunctions {
   static final storage = FlutterSecureStorage();
 
   static Future<List> getCards(String userId) async {
-    List _cards = [];
+    List<UserCard> _cards = [];
     try {
       final SharedPreferences prefs = await _prefs;
       List<String> _userCards = prefs.getStringList('${userId}_cards') ?? [];

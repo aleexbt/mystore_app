@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mystore/components/image_loader.dart';
 import 'package:mystore/helpers/network_error.dart';
+import 'package:mystore/models/network_model.dart';
 import 'package:mystore/services/api.dart';
 
 class Home extends StatefulWidget {
@@ -13,6 +14,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
   bool networkError = false;
+  int networkStatusCode;
   Future _getConfig;
 
   @override
@@ -22,21 +24,21 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
   }
 
   Future getConfig() async {
-    var response = await Api.appConfig();
-    if (response == null) {
+    NetworkHandler network = await Api.appConfig();
+    if (network.error) {
       setState(() {
         networkError = true;
+        networkStatusCode = network.statusCode;
       });
-      debugPrint('Erro no carregamento');
-      return null;
     } else {
-      return response;
+      return network.response;
     }
   }
 
   Future retry() async {
     setState(() {
       networkError = false;
+      networkStatusCode = null;
     });
     _getConfig = getConfig();
   }
@@ -87,7 +89,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
                 builder: (context, snapshot) {
                   if (networkError) {
                     return SliverToBoxAdapter(
-                      child: NetworkError(retry),
+                      child: NetworkError(retry, statusCode: networkStatusCode),
                     );
                   }
                   if (!snapshot.hasData) {

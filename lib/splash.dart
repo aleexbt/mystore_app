@@ -5,9 +5,11 @@ import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/helpers/user_functions.dart';
 import 'package:mystore/models/user_model.dart';
 import 'package:mystore/services/api.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'controllers/user_provider.dart';
+import 'package:hive/hive.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -21,6 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    //_openBox();
     launchPrefs();
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     //   launchPrefs();
@@ -37,30 +40,49 @@ class _SplashScreenState extends State<SplashScreen> {
   void launchPrefs() async {
     try {
       final SharedPreferences prefs = await _prefs;
-      String _token = prefs.getString('token');
-      bool _isLoggedIn = prefs.getBool('isLoggedIn');
+      Box box = await Hive.openBox('MyStore');
+      String _token = box.get('token');
+      bool _isLoggedIn = box.get('isLoggedIn');
+
+      User _userData = box.get('userData');
+
+      print(_userData.name);
 
       //prefs.clear();
 
       if (_token != null && _isLoggedIn) {
         debugPrint('Usuário autenticado');
-        var response = await Api.userInfo();
 
-        User userData = User.fromJson({
-          'id': response.data['_id'],
-          'name': response.data['name'],
-          'email': response.data['email'],
-          'phone': response.data['phone'],
-          'cpf': response.data['cpf'],
-          'address': response.data['address'],
-          'cards': await UserFunctions.getCards(response.data['_id']),
-        });
+        try {
+          var response = await Api.userInfo();
+          User userData = User.fromJson({
+            'id': response.data['_id'],
+            'name': response.data['name'],
+            'email': response.data['email'],
+            'phone': response.data['phone'],
+            'cpf': response.data['cpf'],
+            'address': response.data['address'],
+            'cards': await UserFunctions.getCards(response.data['_id']),
+          });
 
-        Provider.of<UserModel>(context, listen: false).token = _token;
-        Provider.of<UserModel>(context, listen: false).setUserData(userData);
-        Provider.of<UserModel>(context, listen: false).setLoggedIn = true;
-        await Provider.of<CartModel>(context, listen: false).loadCart();
-        Navigator.pushReplacementNamed(context, '/app');
+          Provider.of<UserModel>(context, listen: false).token = _token;
+          Provider.of<UserModel>(context, listen: false).setUserData(userData);
+          Provider.of<UserModel>(context, listen: false).setLoggedIn = true;
+          await Provider.of<CartModel>(context, listen: false).loadCart();
+          Navigator.pushReplacementNamed(context, '/app');
+        } catch (err) {
+          User _userData = box.get('userData');
+          List<UserCard> _cards = await UserFunctions.getCards(_userData.id);
+          _cards.length == 0
+              ? _userData.cards = []
+              : _cards.forEach((element) {
+                  _userData.cards.add(element);
+                });
+          Provider.of<UserModel>(context, listen: false).token = _token;
+          Provider.of<UserModel>(context, listen: false).setUserData(_userData);
+          Provider.of<UserModel>(context, listen: false).setLoggedIn = true;
+          Navigator.pushReplacementNamed(context, '/app');
+        }
       } else {
         debugPrint('Usuario não autenticado');
         await Future.delayed(Duration(seconds: 2));

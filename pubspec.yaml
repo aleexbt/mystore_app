@@ -41,6 +41,9 @@ dependencies:
   dio_http_cache: ^0.2.8
   sqflite: ^1.3.1
   shared_preferences: ^0.5.8
+  hive: ^1.4.4
+  hive_flutter: ^0.3.1
+  hive_generator: ^0.7.1
   jwt_decode: ^0.1.0
   mask_text_input_formatter: ^1.0.7
   flutter_masked_text: ^0.8.0
@@ -56,10 +59,12 @@ dependencies:
   badges: ^1.1.1
   credit_card_type_detector: ^1.1.0
   onesignal_flutter: ^2.6.0
+  page_transition: ^1.1.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: ^1.10.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -101,6 +106,15 @@ flutter:
         - asset: assets/fonts/SourceSansPro-BoldItalic.ttf
           weight: 700
           style: italic
+    - family: SulSans
+      fonts:
+        - asset: assets/fonts/SulSans-Regular.ttf
+        - asset: assets/fonts/SulSans-Light.ttf
+          weight: 300
+        - asset: assets/fonts/SulSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/SulSans-Bold.ttf
+          weight: 600
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -1,14 +1,29 @@
+import 'package:hive/hive.dart';
+part 'user_model.g.dart';
+
+@HiveType(typeId: 0)
 class UserAddress {
+  @HiveField(0)
   String id;
+  @HiveField(1)
   bool primary;
+  @HiveField(2)
   String name;
+  @HiveField(3)
   String state;
+  @HiveField(4)
   String city;
+  @HiveField(5)
   String neighborhood;
+  @HiveField(6)
   String street;
+  @HiveField(7)
   String streetNumber;
+  @HiveField(8)
   String complement;
+  @HiveField(9)
   String reference;
+  @HiveField(10)
   String zipcode;
 
   UserAddress(
@@ -103,12 +118,19 @@ class UserCard {
   }
 }
 
+@HiveType(typeId: 1)
 class User {
+  @HiveField(0)
   String id;
+  @HiveField(1)
   String name;
+  @HiveField(2)
   String email;
+  @HiveField(3)
   String phone;
+  @HiveField(4)
   String cpf;
+  @HiveField(5)
   List<UserAddress> address;
   List<UserCard> cards;
 

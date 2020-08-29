@@ -3,9 +3,23 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mystore/constants.dart';
 
 class NetworkError extends StatelessWidget {
+  final int statusCode;
+  final String errorMsg;
   final Function retry;
 
-  NetworkError(this.retry);
+  NetworkError(this.retry, {this.statusCode, this.errorMsg});
+
+  String errorMessage() {
+    if (statusCode == 523) {
+      return 'Verifique a qualidade da sua conexão e tente novamente.';
+    } else if (statusCode == 524) {
+      return 'Parece que nosso servidor está sobrecarregado, tente novamente mais tarde.';
+    } else if (statusCode == 502) {
+      return 'Verifique sua conexão e tente novamente.';
+    } else {
+      return 'Ops, parece que nosso servidor está passando por dificuldades neste momento.';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +38,7 @@ class NetworkError extends StatelessWidget {
           ),
           SizedBox(height: 10.0),
           Text(
-            'Sem conexão',
+            'Ocorreu um erro',
             style: TextStyle(
               color: Colors.grey[600],
               fontWeight: FontWeight.w600,
@@ -33,7 +47,7 @@ class NetworkError extends StatelessWidget {
           ),
           SizedBox(height: 5.0),
           Text(
-            'Verifique sua conexão e tente novamente.',
+            errorMessage(),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.grey[600],

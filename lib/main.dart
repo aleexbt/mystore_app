@@ -1,18 +1,28 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/global.dart';
 import 'package:mystore/controllers/user_provider.dart';
 import 'package:mystore/helpers/navigation_helper.dart';
+import 'package:mystore/models/user_model.dart';
 import 'package:mystore/routes.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 const bool isProduction = bool.fromEnvironment('dart.vm.product');
-void main() {
+Future<void> main() async {
   if (isProduction) {
     debugPrint = (String message, {int wrapWidth}) {};
   }
+  WidgetsFlutterBinding.ensureInitialized();
+  Directory dir = await getApplicationDocumentsDirectory();
+  Hive.init(dir.path);
+  Hive.registerAdapter(UserAdapter());
+  Hive.registerAdapter(UserAddressAdapter());
   runApp(MyApp());
 }
 
@@ -67,7 +77,7 @@ class MyApp extends StatelessWidget {
             toggleableActiveColor: kPrimaryColor,
             cursorColor: Colors.grey[500],
             visualDensity: VisualDensity.adaptivePlatformDensity,
-            fontFamily: 'SourceSans Pro',
+            fontFamily: 'SulSans',
             pageTransitionsTheme: const PageTransitionsTheme(
               builders: {
                 TargetPlatform.android: ZoomPageTransitionsBuilder(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mystore/helpers/network_error.dart';
+import 'package:mystore/models/network_model.dart';
 import 'package:mystore/services/api.dart';
 import 'package:mystore/tiles/category_tile.dart';
 
@@ -14,6 +15,7 @@ class _CategoriesState extends State<Categories>
   bool get wantKeepAlive => true;
   Future _getCategories;
   bool networkError = false;
+  int networkStatusCode;
 
   @override
   void initState() {
@@ -22,21 +24,21 @@ class _CategoriesState extends State<Categories>
   }
 
   Future getCategories() async {
-    var response = await Api.getCategories();
-    if (response == null) {
+    NetworkHandler network = await Api.getCategories();
+    if (network.error) {
       setState(() {
         networkError = true;
+        networkStatusCode = network.statusCode;
       });
-      debugPrint('Erro no carregamento');
-      return null;
     } else {
-      return response;
+      return network.response;
     }
   }
 
   Future retry() async {
     setState(() {
       networkError = false;
+      networkStatusCode = null;
     });
     _getCategories = getCategories();
   }
@@ -52,7 +54,7 @@ class _CategoriesState extends State<Categories>
         future: _getCategories,
         builder: (context, snapshot) {
           if (networkError) {
-            return NetworkError(retry);
+            return NetworkError(retry, statusCode: networkStatusCode);
           }
           if (!snapshot.hasData) {
             return Center(

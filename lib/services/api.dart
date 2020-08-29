@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mystore/models/network_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const bool isProduction = bool.fromEnvironment('dart.vm.product');
@@ -15,7 +16,7 @@ final String baseUrl = isProduction
     : 'http://192.168.0.10:3000';
 
 BaseOptions options = BaseOptions(
-  connectTimeout: 20000,
+  connectTimeout: 8000,
   receiveTimeout: 3000,
 );
 
@@ -43,6 +44,7 @@ class Api {
           _token = response.data['token'];
         } else {
           debugPrint('REFRESH_TOKEN_FAIL');
+          prefs.setString('token', null);
         }
       }
       return _token;
@@ -55,14 +57,38 @@ class Api {
     dio.interceptors.add(_dioCacheManager.interceptor);
     try {
       Response response = await dio.get(baseUrl + '/config');
-      return response.data;
+      return NetworkHandler(
+        statusCode: response.statusCode,
+        error: false,
+        response: response.data,
+      );
     } on DioError catch (e) {
-      if (e.response != null) {
-        return null;
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 523,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 524,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.response == null) {
+        return NetworkHandler(
+          statusCode: 502,
+          error: true,
+          response: null,
+        );
       } else {
-        debugPrint(e.request.toString());
-        debugPrint(e.message);
-        return null;
+        return NetworkHandler(
+          statusCode: e.response.statusCode,
+          error: true,
+          response: e.response.data,
+        );
       }
     }
   }
@@ -88,14 +114,38 @@ class Api {
     dio.interceptors.add(_dioCacheManager.interceptor);
     try {
       Response response = await dio.get(baseUrl + '/categories');
-      return response.data;
+      return NetworkHandler(
+        statusCode: response.statusCode,
+        error: false,
+        response: response.data,
+      );
     } on DioError catch (e) {
-      if (e.response != null) {
-        return null;
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 523,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 524,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.response == null) {
+        return NetworkHandler(
+          statusCode: 502,
+          error: true,
+          response: null,
+        );
       } else {
-        debugPrint(e.request.toString());
-        debugPrint(e.message);
-        return null;
+        return NetworkHandler(
+          statusCode: e.response.statusCode,
+          error: true,
+          response: e.response.data,
+        );
       }
     }
   }
@@ -103,14 +153,38 @@ class Api {
   static Future productsByCategory(String id) async {
     try {
       Response response = await dio.get(baseUrl + '/categories/$id');
-      return response.data;
+      return NetworkHandler(
+        statusCode: response.statusCode,
+        error: false,
+        response: response.data,
+      );
     } on DioError catch (e) {
-      if (e.response != null) {
-        return null;
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 523,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 524,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.response == null) {
+        return NetworkHandler(
+          statusCode: 502,
+          error: true,
+          response: null,
+        );
       } else {
-        debugPrint(e.request.toString());
-        debugPrint(e.message);
-        return null;
+        return NetworkHandler(
+          statusCode: e.response.statusCode,
+          error: true,
+          response: e.response.data,
+        );
       }
     }
   }
@@ -137,8 +211,43 @@ class Api {
   static Future getOrders() async {
     String _token = await getToken();
     dio.options.headers["Authorization"] = '$_token';
-    Response response = await dio.get(baseUrl + '/orders');
-    return response.data;
+
+    try {
+      Response response = await dio.get(baseUrl + '/orders');
+      return NetworkHandler(
+        statusCode: response.statusCode,
+        error: false,
+        response: response.data,
+      );
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 523,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 524,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.response == null) {
+        return NetworkHandler(
+          statusCode: 502,
+          error: true,
+          response: null,
+        );
+      } else {
+        return NetworkHandler(
+          statusCode: e.response.statusCode,
+          error: true,
+          response: e.response.data,
+        );
+      }
+    }
   }
 
   static Future validateCep(String cep) async {

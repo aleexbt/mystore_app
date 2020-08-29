@@ -8,6 +8,7 @@ import 'package:mystore/services/api.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 
 class UserModel extends ChangeNotifier {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -130,6 +131,7 @@ class UserModel extends ChangeNotifier {
     notifyListeners();
     final storage = FlutterSecureStorage();
     final SharedPreferences prefs = await _prefs;
+    Box box = await Hive.openBox('MyStore');
     Map<String, dynamic> userData = {'email': email, 'password': password};
 
     var response = await Api.signIn(userData);
@@ -147,8 +149,11 @@ class UserModel extends ChangeNotifier {
         'cards': _cards,
       });
       setUserData(userData);
+      box.put('userData', userData);
       setLoggedIn = true;
       token = response.data['jwt'];
+      box.put('token', response.data['jwt']);
+      box.put('isLoggedIn', true);
       storage.write(key: 'secure_token', value: response.data['token']);
       prefs.setString('token', response.data['jwt']);
       prefs.setBool('isLoggedIn', true);

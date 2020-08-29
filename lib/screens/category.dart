@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mystore/datas/product_data.dart';
 import 'package:mystore/helpers/network_error.dart';
+import 'package:mystore/models/network_model.dart';
 import 'package:mystore/services/api.dart';
 import 'package:mystore/tiles/product_tile.dart';
 
@@ -15,6 +16,7 @@ class Category extends StatefulWidget {
 class _CategoryState extends State<Category> {
   Future _getCategoryProducts;
   bool networkError = false;
+  int networkStatusCode;
 
   @override
   void initState() {
@@ -23,21 +25,21 @@ class _CategoryState extends State<Category> {
   }
 
   Future getCategoryProducts() async {
-    var response = await Api.productsByCategory(widget.args['catId']);
-    if (response == null) {
+    NetworkHandler network = await Api.productsByCategory(widget.args['catId']);
+    if (network.error) {
       setState(() {
         networkError = true;
+        networkStatusCode = network.statusCode;
       });
-      debugPrint('Erro no carregamento');
-      return null;
     } else {
-      return response;
+      return network.response;
     }
   }
 
   Future retry() async {
     setState(() {
       networkError = false;
+      networkStatusCode = null;
     });
     _getCategoryProducts = getCategoryProducts();
   }
@@ -73,7 +75,7 @@ class _CategoryState extends State<Category> {
             future: _getCategoryProducts,
             builder: (context, snapshot) {
               if (networkError) {
-                return NetworkError(retry);
+                return NetworkError(retry, statusCode: networkStatusCode);
               }
               if (!snapshot.hasData) {
                 return Center(

@@ -126,8 +126,9 @@ class _AppState extends State<App> {
           )
         ],
         currentIndex: _selectedIndex,
-        onTap: (int index) => _pageController.animateToPage(index,
-            duration: Duration(milliseconds: 200), curve: Curves.linear),
+        // onTap: (int index) => _pageController.animateToPage(index,
+        //     duration: Duration(milliseconds: 200), curve: Curves.linear),
+        onTap: (int index) => _pageController.jumpToPage(index),
       ),
     );
   }

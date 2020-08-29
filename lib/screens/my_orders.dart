@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mystore/controllers/user_provider.dart';
+import 'package:mystore/helpers/network_error.dart';
+import 'package:mystore/models/network_model.dart';
 import 'package:mystore/services/api.dart';
 import 'package:mystore/tiles/order_tile.dart';
 import 'package:provider/provider.dart';
@@ -22,15 +24,23 @@ class _MyOrdersState extends State<MyOrders>
   Stream broadcastStream;
   List orderList = [];
   bool _isLoading = true;
+  bool networkError = false;
+  int networkStatusCode;
 
   Future<List> getOrders() async {
-    var response = await Api.getOrders();
-    setState(() {
-      orderList = [];
-      orderList.addAll(response);
-      _isLoading = false;
-    });
-    return orderList;
+    NetworkHandler network = await Api.getOrders();
+    if (network.error) {
+      networkError = true;
+      networkStatusCode = network.statusCode;
+      return orderList;
+    } else {
+      setState(() {
+        orderList = [];
+        orderList.addAll(network.response);
+        _isLoading = false;
+      });
+      return orderList;
+    }
   }
 
   void updateList(dynamic data) {
@@ -73,6 +83,14 @@ class _MyOrdersState extends State<MyOrders>
     );
   }
 
+  Future retry() async {
+    setState(() {
+      networkError = false;
+      networkStatusCode = null;
+    });
+    getOrders();
+  }
+
   @override
   void dispose() {
     channel.sink.close();
@@ -89,103 +107,112 @@ class _MyOrdersState extends State<MyOrders>
       appBar: AppBar(
         title: Text('Meus pedidos'),
       ),
-      body: RefreshIndicator(
-        onRefresh: getOrders,
-        child: ListView(
-          children: [
-            !userModel.isLoggedIn
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error,
-                        size: 100.0,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(height: 16.0),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-                        child: Text(
-                          'Para acompanhar seus pedidos você precisa estar autenticado.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Column(
-                    mainAxisAlignment: orderList.length == 0
-                        ? MainAxisAlignment.center
-                        : MainAxisAlignment.start,
-                    children: [
-                      Visibility(
-                        visible: orderList.length == 0 && _isLoading,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              left: 8.0, top: height, right: 8.0, bottom: 8.0),
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                      Visibility(
-                        visible: orderList.length == 0 && !_isLoading,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              left: 8.0, top: height2, right: 8.0, bottom: 8.0),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.error,
-                                size: 100.0,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(height: 16.0),
-                              Text(
-                                'Você ainda não possui nenhum pedido.',
+      body: networkError
+          ? NetworkError(retry, statusCode: networkStatusCode)
+          : RefreshIndicator(
+              onRefresh: getOrders,
+              child: ListView(
+                children: [
+                  !userModel.isLoggedIn
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error,
+                              size: 100.0,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 16.0),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 30.0, right: 30.0),
+                              child: Text(
+                                'Para acompanhar seus pedidos você precisa estar autenticado.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 17.0,
+                                  fontSize: 18.0,
+                                  color: Colors.grey[500],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          mainAxisAlignment: orderList.length == 0
+                              ? MainAxisAlignment.center
+                              : MainAxisAlignment.start,
+                          children: [
+                            Visibility(
+                              visible: orderList.length == 0 && _isLoading,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    left: 8.0,
+                                    top: height,
+                                    right: 8.0,
+                                    bottom: 8.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                            Visibility(
+                              visible: orderList.length == 0 && !_isLoading,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    left: 8.0,
+                                    top: height2,
+                                    right: 8.0,
+                                    bottom: 8.0),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.error,
+                                      size: 100.0,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(height: 16.0),
+                                    Text(
+                                      'Você ainda não possui nenhum pedido.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 17.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            StreamBuilder(
+                              stream: broadcastStream,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  var response = json.decode(snapshot.data);
+                                  if (response['success']) {
+                                    updateList(response['orderData']);
+                                  }
+                                  return ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: orderList.length,
+                                    itemBuilder: (context, index) {
+                                      return OrderTile(orderList[index]);
+                                    },
+                                  );
+                                } else {
+                                  return ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: orderList.length,
+                                    itemBuilder: (context, index) {
+                                      return OrderTile(orderList[index]);
+                                    },
+                                  );
+                                }
+                              },
+                            ),
+                          ],
                         ),
-                      ),
-                      StreamBuilder(
-                        stream: broadcastStream,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            var response = json.decode(snapshot.data);
-                            if (response['success']) {
-                              updateList(response['orderData']);
-                            }
-                            return ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: orderList.length,
-                              itemBuilder: (context, index) {
-                                return OrderTile(orderList[index]);
-                              },
-                            );
-                          } else {
-                            return ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: orderList.length,
-                              itemBuilder: (context, index) {
-                                return OrderTile(orderList[index]);
-                              },
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-          ],
-        ),
-      ),
+                ],
+              ),
+            ),
     );
   }
 }
