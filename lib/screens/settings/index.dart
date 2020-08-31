@@ -38,6 +38,9 @@ class _SettingsNavigatorState extends State<SettingsNavigator>
               return CupertinoPageRoute(
                 builder: (_) => Profile(profileData: args),
               );
+            // return PageTransition(
+            //     child: Profile(profileData: args),
+            //     type: PageTransitionType.rightToLeft);
             case '/settings/profile/change_password':
               return CupertinoPageRoute(
                 builder: (_) => ChangePassword(),

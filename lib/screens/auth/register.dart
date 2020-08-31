@@ -25,7 +25,12 @@ class _RegisterState extends State<Register> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Cadastro'),
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('CADASTRO'),
       ),
       body: Consumer<UserModel>(builder: (context, data, child) {
         return ModalProgressHUD(

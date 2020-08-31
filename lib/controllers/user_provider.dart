@@ -174,6 +174,7 @@ class UserModel extends ChangeNotifier {
 
   logOut(BuildContext context) async {
     final SharedPreferences prefs = await _prefs;
+    Box box = await Hive.openBox('MyStore');
     final storage = FlutterSecureStorage();
     var file = await _getFile();
     file.writeAsString('');
@@ -182,6 +183,8 @@ class UserModel extends ChangeNotifier {
     Provider.of<CartModel>(context, listen: false).products = [];
     prefs.setBool('isLoggedIn', false);
     prefs.setBool('token', null);
+    box.put('isLoggedIn', false);
+    box.put('token', null);
     storage.delete(key: 'secure_token');
   }
 }

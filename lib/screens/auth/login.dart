@@ -23,7 +23,7 @@ class _LoginState extends State<Login> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Entrar'),
+        title: Text('ENTRAR'),
       ),
       body: Consumer<UserModel>(
         builder: (context, data, child) {

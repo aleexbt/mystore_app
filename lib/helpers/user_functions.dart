@@ -16,7 +16,8 @@ class UserFunctions {
 
       for (var card in _userCards) {
         String getCard = await storage.read(key: card);
-        _cards.add(json.decode(getCard));
+        Map<String, dynamic> _card = json.decode(getCard);
+        _cards.add(UserCard.fromJson(_card));
       }
     } catch (e) {
       debugPrint('Erro ao recuperar chaves: $e');

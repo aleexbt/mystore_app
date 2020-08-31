@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mystore/models/network_model.dart';
@@ -28,11 +29,13 @@ class Api {
   static Future<String> getToken() async {
     try {
       final SharedPreferences prefs = await _prefs;
-      Map<String, dynamic> payload = Jwt.parseJwt(prefs.get('token'));
+      Box box = await Hive.openBox('MyStore');
+      String _token = box.get('token');
+      Map<String, dynamic> payload = Jwt.parseJwt(_token);
       Future<String> secureToken = _storage.read(key: 'secure_token');
       String _secureToken = await secureToken;
       int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      String _token = prefs.get('token');
+      // String _token = prefs.get('token');
 
       if (payload['exp'] < currentTime) {
         dio.options.headers["Authorization"] = '$_token';
@@ -41,10 +44,12 @@ class Api {
         if (response.data['success']) {
           debugPrint('REFRESH_TOKEN_SUCCESS');
           prefs.setString('token', response.data['token']);
+          box.put('token', response.data['token']);
           _token = response.data['token'];
         } else {
           debugPrint('REFRESH_TOKEN_FAIL');
           prefs.setString('token', null);
+          box.put('token', null);
         }
       }
       return _token;
@@ -96,8 +101,42 @@ class Api {
   static Future userInfo() async {
     String _token = await getToken();
     dio.options.headers["Authorization"] = '$_token';
-    Response response = await dio.get(baseUrl + '/users/me');
-    return response;
+    try {
+      Response response = await dio.get(baseUrl + '/users/me');
+      return NetworkHandler(
+        statusCode: response.statusCode,
+        error: false,
+        response: response.data,
+      );
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 523,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 524,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.response == null) {
+        return NetworkHandler(
+          statusCode: 502,
+          error: true,
+          response: null,
+        );
+      } else {
+        return NetworkHandler(
+          statusCode: e.response.statusCode,
+          error: true,
+          response: e.response.data,
+        );
+      }
+    }
   }
 
   static Future signUp(Map<String, dynamic> userData) async {
@@ -190,9 +229,42 @@ class Api {
   }
 
   static Future productById(String id) async {
-    Response<Map<String, dynamic>> response =
-        await dio.get(baseUrl + '/products/$id');
-    return response.data;
+    try {
+      Response response = await dio.get(baseUrl + '/products/$id');
+      return NetworkHandler(
+        statusCode: response.statusCode,
+        error: false,
+        response: response.data,
+      );
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 523,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 524,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.response == null) {
+        return NetworkHandler(
+          statusCode: 502,
+          error: true,
+          response: null,
+        );
+      } else {
+        return NetworkHandler(
+          statusCode: e.response.statusCode,
+          error: true,
+          response: e.response.data,
+        );
+      }
+    }
   }
 
   static Future checkCoupon(String coupon) async {

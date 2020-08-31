@@ -23,6 +23,11 @@ class Cart extends StatelessWidget {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.keyboard_arrow_down, size: 40.0),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text('MEU CARRINHO'),
         actions: <Widget>[
           Container(
@@ -120,7 +125,7 @@ class Cart extends StatelessWidget {
                         onPressed: selectedShipping &&
                                 !context.watch<CartModel>().shippingCalcError
                             ? () {
-                                Navigator.pushNamed(context, '/checkout');
+                                Navigator.pushNamed(context, '/cart/checkout');
                               }
                             : null,
                         color: Color.fromARGB(255, 211, 110, 130),
@@ -146,7 +151,7 @@ class Cart extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        Navigator.pushNamed(context, '/select_address');
+        Navigator.pushNamed(context, '/cart/select_address');
       },
       child: Container(
         //padding: EdgeInsets.all(8.0),

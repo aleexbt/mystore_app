@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mystore/app.dart';
+import 'package:mystore/screens/cart/select_address.dart';
 import 'package:mystore/screens/settings/address.dart';
 import 'package:mystore/screens/settings/address_editor.dart';
 import 'package:mystore/screens/cart/cart.dart';
@@ -34,9 +35,17 @@ class RouteGenerator {
       case '/category':
         return MaterialPageRoute(builder: (_) => Category(args));
       case '/product':
-        return MaterialPageRoute(builder: (_) => Product(args));
+        return MaterialPageRoute(builder: (_) => Product(pid: args));
+      case '/home/product':
+        return CupertinoPageRoute(
+            builder: (_) => Product(pid: args), fullscreenDialog: true);
       case '/cart':
-        return MaterialPageRoute(builder: (_) => Cart());
+        // return MaterialPageRoute(builder: (_) => Cart());
+        return CupertinoPageRoute(
+            builder: (_) => Cart(), fullscreenDialog: true);
+      case '/cart/select_address':
+        // return MaterialPageRoute(builder: (_) => Cart());
+        return CupertinoPageRoute(builder: (_) => SelectAddress());
       case '/auth/login':
         return MaterialPageRoute(builder: (_) => Login(redirectTimes: args));
       case '/auth/register':

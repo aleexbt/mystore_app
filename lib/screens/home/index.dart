@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mystore/helpers/navigation_helper.dart';
-import 'package:mystore/screens/categories.dart';
-import 'package:mystore/screens/category.dart';
-import 'package:mystore/screens/product.dart';
+import 'package:mystore/screens/home/home.dart';
 
-class ProductsNavigator extends StatefulWidget {
+class HomeNavigator extends StatefulWidget {
   @override
-  _ProductsNavigatorState createState() => _ProductsNavigatorState();
+  _HomeNavigatorState createState() => _HomeNavigatorState();
 }
 
-class _ProductsNavigatorState extends State<ProductsNavigator>
+class _HomeNavigatorState extends State<HomeNavigator>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -19,28 +17,20 @@ class _ProductsNavigatorState extends State<ProductsNavigator>
     super.build(context);
     return WillPopScope(
       child: Navigator(
-        key: NavKey.productsKey,
+        key: NavKey.homeKey,
         onGenerateRoute: (RouteSettings settings) {
           final args = settings.arguments;
           switch (settings.name) {
             case '/':
               return MaterialPageRoute(
-                builder: (_) => Categories(),
-              );
-            case '/category':
-              return MaterialPageRoute(
-                builder: (_) => Category(args),
-              );
-            case '/product':
-              return MaterialPageRoute(
-                builder: (_) => Product(pid: args),
+                builder: (_) => Home(),
               );
             default:
               return _errorRoute();
           }
         },
       ),
-      onWillPop: () async => !await NavKey.productsKey.currentState.maybePop(),
+      onWillPop: () async => !await NavKey.cartKey.currentState.maybePop(),
     );
   }
 

@@ -1,7 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
@@ -9,11 +9,12 @@ import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:mystore/helpers/notification_helper.dart';
 import 'package:mystore/screens/auth/login.dart';
 import 'package:mystore/screens/cart/index.dart';
-import 'package:mystore/screens/home.dart';
+import 'package:mystore/screens//home/home.dart';
 import 'package:mystore/screens/settings/index.dart';
 import 'package:mystore/screens/my_orders.dart';
 import 'package:mystore/screens/products_navigator.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class App extends StatefulWidget {
   final redirectPage;
@@ -27,6 +28,7 @@ class _AppState extends State<App> {
   PageController _pageController = NavKey.pageController;
   int _selectedIndex = 0;
   int productCount = 0;
+  final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
   void onPageChanged(int index) {
     setState(() {
@@ -46,7 +48,7 @@ class _AppState extends State<App> {
     super.initState();
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.white,
+      statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     ));
     if (widget.redirectPage != null) {
@@ -65,6 +67,9 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     var model = Provider.of<UserModel>(context);
+    int prices = context.watch<CartModel>().getProductsPrice();
+    int discount = context.watch<CartModel>().getDiscount();
+    int ship = context.watch<CartModel>().shippingPrice;
     return Scaffold(
       body: PageView(
         physics: NeverScrollableScrollPhysics(),
@@ -75,60 +80,115 @@ class _AppState extends State<App> {
           ProductsNavigator(),
           // Places(),
           MyOrders(),
-          CartNavigator(),
+          // CartNavigator(),
           model.isLoggedIn ? SettingsNavigator() : Login(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 5,
-        unselectedFontSize: 10,
-        selectedFontSize: 10,
-        unselectedItemColor: Colors.grey[500],
-        selectedItemColor: Colors.grey[800],
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Início'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            title: Text('Produtos'),
-          ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.store),
-          //   title: Text('Lojas'),
-          // ),
-          BottomNavigationBarItem(
-            icon: Icon(MdiIcons.trayFull),
-            title: Text('Pedidos'),
-          ),
-          BottomNavigationBarItem(
-            icon: context.watch<CartModel>().productCount == 0
-                ? Icon(Icons.shopping_cart)
-                : Badge(
-                    badgeColor: kPrimaryColor,
-                    badgeContent: Text(
-                      context.watch<CartModel>().productCount.toString(),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10.0,
+      bottomNavigationBar: Container(
+        color: kPrimaryColor,
+        height: context.watch<CartModel>().productCount > 0 ? 110.0 : 56.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            context.watch<CartModel>().productCount > 0
+                ? GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () => Navigator.of(context).pushNamed('/cart'),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 15.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Badge(
+                            badgeColor: Colors.white,
+                            badgeContent: Text(
+                              context
+                                  .watch<CartModel>()
+                                  .productCount
+                                  .toString(),
+                              style: TextStyle(
+                                color: kPrimaryColor,
+                                fontSize: 10.0,
+                              ),
+                            ),
+                            child: Icon(
+                              AntDesign.shoppingcart,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'Ver carrinho',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            '${currency.format((prices + ship - discount) / 100)}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Icon(Icons.shopping_cart),
-                  ),
-            title: Text('Carrinho'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            title: Text('Sua Conta'),
-          )
-        ],
-        currentIndex: _selectedIndex,
-        // onTap: (int index) => _pageController.animateToPage(index,
-        //     duration: Duration(milliseconds: 200), curve: Curves.linear),
-        onTap: (int index) => _pageController.jumpToPage(index),
+                  )
+                : Container(),
+            BottomNavigationBar(
+              elevation: 5,
+              unselectedFontSize: 10,
+              selectedFontSize: 10,
+              unselectedItemColor: Colors.grey[500],
+              selectedItemColor: Colors.grey[800],
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(AntDesign.home),
+                  title: Text('Início'),
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(AntDesign.appstore_o),
+                  title: Text('Produtos'),
+                ),
+                // BottomNavigationBarItem(
+                //   icon: Icon(Icons.store),
+                //   title: Text('Lojas'),
+                // ),
+                BottomNavigationBarItem(
+                  icon: Icon(Feather.file_text),
+                  title: Text('Pedidos'),
+                ),
+                // BottomNavigationBarItem(
+                //   icon: context.watch<CartModel>().productCount == 0
+                //       ? Icon(AntDesign.shoppingcart)
+                //       : Badge(
+                //           badgeColor: kPrimaryColor,
+                //           badgeContent: Text(
+                //             context.watch<CartModel>().productCount.toString(),
+                //             style: TextStyle(
+                //               color: Colors.white,
+                //               fontSize: 10.0,
+                //             ),
+                //           ),
+                //           child: Icon(AntDesign.shoppingcart),
+                //         ),
+                //   title: Text('Carrinho'),
+                // ),
+                BottomNavigationBarItem(
+                  icon: Icon(AntDesign.user),
+                  title: Text('Sua Conta'),
+                )
+              ],
+              currentIndex: _selectedIndex,
+              // onTap: (int index) => _pageController.animateToPage(index,
+              //     duration: Duration(milliseconds: 200), curve: Curves.linear),
+              onTap: (int index) => _pageController.jumpToPage(index),
+            ),
+          ],
+        ),
       ),
     );
   }

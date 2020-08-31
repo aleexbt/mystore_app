@@ -132,13 +132,7 @@ class Settings extends StatelessWidget {
                 SizedBox(height: 15.0),
                 GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    NavKey.pageController.animateToPage(
-                      3,
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.linear,
-                    );
-                  },
+                  onTap: () {},
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                     child: Row(

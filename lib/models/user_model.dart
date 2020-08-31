@@ -152,8 +152,9 @@ class User {
         address: (json['address'] as List)
             .map((i) => UserAddress.fromJson(i))
             .toList(),
-        cards:
-            (json['cards'] as List).map((i) => UserCard.fromJson(i)).toList(),
+        // cards:
+        //     (json['cards'] as List).map((i) => UserCard.fromJson(i)).toList(),
+        cards: json['cards'],
       );
 
   Map<String, dynamic> toJson() {

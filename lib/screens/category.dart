@@ -3,6 +3,7 @@ import 'package:mystore/constants.dart';
 import 'package:mystore/datas/product_data.dart';
 import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/models/network_model.dart';
+import 'package:mystore/models/product_model.dart';
 import 'package:mystore/services/api.dart';
 import 'package:mystore/tiles/product_tile.dart';
 
@@ -124,7 +125,7 @@ class _CategoryState extends State<Category> {
                       ),
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, index) {
-                        ProductData data = ProductData.fromMap(
+                        Product data = Product.fromJson(
                           snapshot.data[index],
                         );
                         return ProductTile('grid', data);
@@ -134,7 +135,7 @@ class _CategoryState extends State<Category> {
                       padding: EdgeInsets.all(4.0),
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, index) {
-                        ProductData data = ProductData.fromMap(
+                        Product data = Product.fromJson(
                           snapshot.data[index],
                         );
                         return ProductTile('list', data);
