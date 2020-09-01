@@ -1,0 +1,65 @@
+{
+    "files.associations": {
+        "*.js": "javascriptreact"
+    },
+    "dart.flutterSdkPath": "/Users/alex/development/flutter",
+    "dart.previewFlutterUiGuides": true,
+    "dart.previewEmbeddedDevTools": true,
+    "terminal.integrated.rendererType": "dom",
+    "git.enableSmartCommit": true,
+    "cSpell.language": "en,pt-BR",
+    "editor.minimap.enabled": false,
+    "workbench.iconTheme": "material-icon-theme",
+    "emmet.syntaxProfiles": {
+        "javascript": "jsx"
+    },
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true
+    },
+    "eslint.validate": [
+        {
+            "language": "javascript",
+            "autoFix": true
+        },
+        {
+            "language": "javascriptreact",
+            "autoFix": true
+        },
+        {
+            "language": "typescript",
+            "autoFix": true
+        },
+        {
+            "language": "typescriptreact",
+            "autoFix": true
+        }
+    ],
+    "window.zoomLevel": 0,
+    "prettier.printWidth": 150,
+    "sshfs.configs": [
+        {
+            "host": "45.55.124.246",
+            "name": "baixarclub",
+            "privateKeyPath": "/Users/alex/Documents/ServerRafael/do_filmesfree.pem",
+            "root": "/var/www/baixarclub/",
+            "username": "root"
+        }
+    ],
+    "liveServer.settings.donotVerifyTags": true,
+    "liveServer.settings.donotShowInfoMsg": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
+    "dart.debugExternalLibraries": false,
+    "dart.debugSdkLibraries": false,
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "java.semanticHighlighting.enabled": true,
+    "workbench.colorTheme": "Dracula",
+    "files.autoSave": "off"
+}
