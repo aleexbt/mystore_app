@@ -197,11 +197,8 @@ class _ProductState extends State<Product> {
                                       //   '/auth/login',
                                       //   arguments: 1,
                                       // );
-                                      NavKey.pageController.animateToPage(
-                                        4,
-                                        duration: Duration(milliseconds: 200),
-                                        curve: Curves.linear,
-                                      );
+                                      Navigator.pop(context);
+                                      NavKey.pageController.jumpToPage(3);
                                     }
                                   : null,
                               child: Text(
@@ -255,6 +252,9 @@ class _ProductState extends State<Product> {
                                       btnOkText: 'OK',
                                       btnOkOnPress: () {
                                         //Navigator.pop(context);
+                                      },
+                                      onDissmissCallback: () {
+                                        Navigator.pop(context);
                                       },
                                       btnOkIcon: Icons.check_circle,
                                     )..show();

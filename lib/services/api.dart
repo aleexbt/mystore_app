@@ -14,7 +14,7 @@ final _storage = FlutterSecureStorage();
 
 final String baseUrl = isProduction
     ? 'https://xelapps-mystore.herokuapp.com'
-    : 'http://192.168.0.10:3000';
+    : 'https://8ed9fda3871f.ngrok.io';
 
 BaseOptions options = BaseOptions(
   connectTimeout: 8000,
@@ -237,6 +237,7 @@ class Api {
         response: response.data,
       );
     } on DioError catch (e) {
+      print(e);
       if (e.type == DioErrorType.CONNECT_TIMEOUT) {
         return NetworkHandler(
           statusCode: 523,

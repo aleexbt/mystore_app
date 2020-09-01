@@ -63,6 +63,7 @@ dependencies:
   page_transition: ^1.1.6
   flutter_icons: ^1.1.0
   awesome_dialog: ^1.2.0
+  animations: ^1.1.2
 
 dev_dependencies:
   flutter_test:
