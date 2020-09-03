@@ -14,7 +14,7 @@ final _storage = FlutterSecureStorage();
 
 final String baseUrl = isProduction
     ? 'https://xelapps-mystore.herokuapp.com'
-    : 'https://8ed9fda3871f.ngrok.io';
+    : 'https://27fb568bfb25.ngrok.io';
 
 BaseOptions options = BaseOptions(
   connectTimeout: 8000,

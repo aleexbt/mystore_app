@@ -113,35 +113,31 @@ class Cart extends StatelessWidget {
                   // ShipCard(),
                   selectAddress(context),
                   CartPrice(products: data.products),
-                  SizedBox(height: 12.0),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      height: 45.0,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        onPressed: selectedShipping &&
-                                !context.watch<CartModel>().shippingCalcError
-                            ? () {
-                                Navigator.pushNamed(context, '/cart/checkout');
-                              }
-                            : null,
-                        color: Color.fromARGB(255, 211, 110, 130),
-                        textColor: Colors.white,
-                        child: Text(selectedShipping &&
-                                !context.watch<CartModel>().shippingCalcError
-                            ? 'CONTINUAR'
-                            : 'Selecione um endereço'),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 12.0),
+                  SizedBox(height: 10.0),
                 ],
               );
             }
           },
+        ),
+      ),
+      bottomNavigationBar: SizedBox(
+        height: 55.0,
+        child: FlatButton(
+          disabledColor: kPrimaryColor.withOpacity(0.5),
+          disabledTextColor: Colors.grey[200],
+          shape: ContinuousRectangleBorder(),
+          onPressed:
+              selectedShipping && !context.watch<CartModel>().shippingCalcError
+                  ? () {
+                      Navigator.pushNamed(context, '/cart/checkout');
+                    }
+                  : null,
+          color: Color.fromARGB(255, 211, 110, 130),
+          textColor: Colors.white,
+          child: Text(
+              selectedShipping && !context.watch<CartModel>().shippingCalcError
+                  ? 'CONTINUAR'
+                  : 'SELECIONE UM ENDEREÇO'),
         ),
       ),
     );

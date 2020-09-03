@@ -5,14 +5,11 @@ import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
 import 'package:mystore/datas/cart_product.dart';
-// import 'package:mystore/datas/product_data.dart';
-import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/models/network_model.dart';
 import 'package:mystore/services/api.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-
 import 'package:mystore/models/product_model.dart' as p;
 import 'package:awesome_dialog/awesome_dialog.dart';
 
@@ -28,6 +25,7 @@ class Product extends StatefulWidget {
 class _ProductState extends State<Product> {
   p.Product product;
   String size;
+  int qtd = 1;
   Future _getProduct;
   bool networkError = false;
   int networkStatusCode;
@@ -74,7 +72,7 @@ class _ProductState extends State<Product> {
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(product?.title ?? ''),
+        title: Text('DETALHES'),
       ),
       body: FutureBuilder(
         future: _getProduct,
@@ -90,7 +88,7 @@ class _ProductState extends State<Product> {
           return ListView(
             children: <Widget>[
               AspectRatio(
-                aspectRatio: 0.9,
+                aspectRatio: 1.1,
                 child: Carousel(
                   images: product.images.map((url) {
                     return buildCachedNImage(
@@ -108,192 +106,297 @@ class _ProductState extends State<Product> {
                   autoplay: false,
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Text(
-                      product.title,
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 3,
-                    ),
-                    Text(
-                      '${currency.format(product.price / 100)}',
-                      style: TextStyle(
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Text(
-                      'Tamanho',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 34.0,
-                      child: GridView(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(vertical: 4.0),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 1,
-                          mainAxisSpacing: 8.0,
-                          childAspectRatio: 0.5,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[800],
+                            fontSize: 17.0,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        children: product.sizes.map((s) {
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                size = s;
-                              });
-                            },
-                            child: Container(
-                              width: 50.0,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(4.0),
-                                ),
-                                border: Border.all(
-                                  color: s == size
-                                      ? Colors.blue
-                                      : Colors.grey[500],
-                                  width: 3.0,
-                                ),
-                              ),
-                              child: Text(s),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Consumer<UserModel>(
-                      builder: (context, data, child) {
-                        if (!data.isLoggedIn) {
-                          return SizedBox(
-                            height: 45.0,
-                            child: RaisedButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              color: kPrimaryColor,
-                              textColor: Colors.white,
-                              onPressed: size != null
-                                  ? () {
-                                      // Navigator.pushNamed(
-                                      //   context,
-                                      //   '/auth/login',
-                                      //   arguments: 1,
-                                      // );
-                                      Navigator.pop(context);
-                                      NavKey.pageController.jumpToPage(3);
-                                    }
-                                  : null,
-                              child: Text(
-                                'Adicionar ao carrinho',
-                              ),
-                            ),
-                          );
-                        }
-                        return SizedBox(
-                          height: 45.0,
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            color: kPrimaryColor,
-                            textColor: Colors.white,
-                            onPressed: size != null
-                                ? () {
-                                    CartProduct cartProduct = CartProduct(
-                                      productId: product.id,
-                                      title: product.title,
-                                      catId: product.category.id,
-                                      size: size,
-                                      price: product.price,
-                                      image: product.images[0],
-                                      qtd: 1,
-                                    );
-                                    //CartController.to.addCartItem(cartProduct);
-                                    Provider.of<CartModel>(context,
-                                            listen: false)
-                                        .addCartItem(cartProduct);
-                                    // Navigator.pushReplacementNamed(
-                                    //     context, '/cart');
-                                    // NavKey.pageController.animateToPage(
-                                    //   3,
-                                    //   duration: Duration(milliseconds: 200),
-                                    //   curve: Curves.linear,
-                                    // );
-
-                                    AwesomeDialog(
-                                      context: context,
-                                      animType: AnimType.BOTTOMSLIDE,
-                                      headerAnimationLoop: false,
-                                      dialogType: DialogType.SUCCES,
-                                      title: 'Tudo certo',
-                                      useRootNavigator: true,
-                                      padding:
-                                          EdgeInsets.only(left: 10, right: 10),
-                                      desc:
-                                          'Este produto foi adicionado ao seu carrinho com sucesso.',
-                                      btnOkText: 'OK',
-                                      btnOkOnPress: () {
-                                        //Navigator.pop(context);
-                                      },
-                                      onDissmissCallback: () {
-                                        Navigator.pop(context);
-                                      },
-                                      btnOkIcon: Icons.check_circle,
-                                    )..show();
-
-                                    //Navigator.pop(context);
-
-                                    //NavKey.pageController.jumpToPage(3);
-                                  }
-                                : null,
-                            child: Text(
-                              'Adicionar ao carrinho',
+                        SizedBox(height: 15.0),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Text(
+                            '${currency.format(product.price / 100)}',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
                             ),
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Text(
-                      'Descrição',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      product.description,
-                      style: TextStyle(
-                        fontSize: 16.0,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  Divider(),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Descrição',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            product.description,
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ]),
+                  ),
+                ],
               )
             ],
           );
         },
       ),
+      bottomNavigationBar: SizedBox(
+        height: 55.0,
+        child: FlatButton(
+          shape: ContinuousRectangleBorder(),
+          color: kPrimaryColor,
+          disabledColor: kPrimaryColor.withOpacity(0.5),
+          disabledTextColor: Colors.grey[600],
+          textColor: Colors.white,
+          onPressed: () =>
+              product?.id != null ? _selectProductSize(context) : null,
+          child: Text(
+            'SELECIONAR',
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _selectProductSize(context) {
+    showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
+      ),
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Wrap(children: [
+              SafeArea(
+                child: Column(
+                  children: [
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 70.0,
+                              height: 7.0,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[400],
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            SizedBox(height: 10.0),
+                            Text(
+                              'Opções do produto',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14.0,
+                              ),
+                            ),
+                            SizedBox(height: 10.0),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Tamanho',
+                                  style: TextStyle(fontSize: 16.0),
+                                ),
+                                SizedBox(height: 5.0),
+                                Row(
+                                  children: product.sizes.map((s) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setModalState(() {
+                                          size = s;
+                                        });
+                                        setState(() {
+                                          size = s;
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8.0),
+                                        child: Container(
+                                          width: 50.0,
+                                          height: 40.0,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: s == size
+                                                  ? kPrimaryColor
+                                                  : Colors.grey[400],
+                                              width: 1.0,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(4.0),
+                                          ),
+                                          child: Text(
+                                            s,
+                                            style: TextStyle(
+                                              color: s == size
+                                                  ? kPrimaryColor
+                                                  : Colors.grey[400],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                                SizedBox(height: 10.0),
+                                Text(
+                                  'Quantidade',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                                SizedBox(height: 5.0),
+                                Container(
+                                  width: 120.0,
+                                  height: 45.0,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey[400],
+                                      width: 1.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.remove,
+                                            color: qtd == 1
+                                                ? Colors.grey[400]
+                                                : kPrimaryColor,
+                                          ),
+                                          onPressed: () {
+                                            if (qtd >= 2) {
+                                              setModalState(() {
+                                                setState(() {
+                                                  qtd--;
+                                                });
+                                              });
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                      Text(qtd.toString()),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.add,
+                                          color: kPrimaryColor,
+                                        ),
+                                        onPressed: () {
+                                          setModalState(() {
+                                            setState(() {
+                                              qtd++;
+                                            });
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 55.0,
+                      width: MediaQuery.of(context).size.width,
+                      child: FlatButton(
+                        shape: ContinuousRectangleBorder(),
+                        color: kPrimaryColor,
+                        disabledColor: kPrimaryColor.withOpacity(0.5),
+                        disabledTextColor: Colors.grey[600],
+                        textColor: Colors.white,
+                        onPressed: size != null &&
+                                context.watch<UserModel>().isLoggedIn
+                            ? () {
+                                CartProduct cartProduct = CartProduct(
+                                  productId: product.id,
+                                  title: product.title,
+                                  catId: product.category.id,
+                                  size: size,
+                                  price: product.price,
+                                  image: product.images[0],
+                                  qtd: qtd,
+                                );
+                                context
+                                    .read<CartModel>()
+                                    .addCartItem(cartProduct);
+                                AwesomeDialog(
+                                  context: context,
+                                  animType: AnimType.BOTTOMSLIDE,
+                                  headerAnimationLoop: false,
+                                  dialogType: DialogType.SUCCES,
+                                  title: 'Tudo certo',
+                                  useRootNavigator: true,
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  desc:
+                                      'Este produto foi adicionado ao seu carrinho com sucesso.',
+                                  btnOkText: 'OK',
+                                  btnOkOnPress: () {
+                                    //Navigator.pop(context);
+                                  },
+                                  onDissmissCallback: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  btnOkIcon: Icons.check_circle,
+                                )..show();
+                              }
+                            : null,
+                        child: Text(
+                          'Adicionar ao carrinho',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ]);
+          },
+        );
+      },
     );
   }
 }
