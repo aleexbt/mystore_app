@@ -19,7 +19,7 @@ class _HomeNavigatorState extends State<HomeNavigator>
       child: Navigator(
         key: NavKey.homeKey,
         onGenerateRoute: (RouteSettings settings) {
-          final args = settings.arguments;
+          // final args = settings.arguments;
           switch (settings.name) {
             case '/':
               return MaterialPageRoute(

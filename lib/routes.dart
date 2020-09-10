@@ -20,6 +20,7 @@ import 'package:mystore/screens/settings/settings.dart';
 import 'package:mystore/screens/my_orders.dart';
 import 'package:mystore/screens/settings/profile.dart';
 import 'package:mystore/splash.dart';
+import 'package:mystore/test.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -45,7 +46,7 @@ class RouteGenerator {
             builder: (_) => Cart(), fullscreenDialog: true);
       case '/cart/select_address':
         // return MaterialPageRoute(builder: (_) => Cart());
-        return CupertinoPageRoute(builder: (_) => SelectAddress());
+        return MaterialPageRoute(builder: (_) => SelectAddress());
       case '/auth/login':
         return MaterialPageRoute(builder: (_) => Login(redirectTimes: args));
       case '/auth/register':
@@ -88,6 +89,10 @@ class RouteGenerator {
         return CupertinoPageRoute(
           builder: (_) => PaymentMethods(data: args),
           fullscreenDialog: false,
+        );
+      case '/teste':
+        return MaterialPageRoute(
+          builder: (_) => OpenContainerTransformDemo(),
         );
       default:
         return _errorRoute();

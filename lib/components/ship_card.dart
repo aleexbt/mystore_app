@@ -30,8 +30,8 @@ class _ShipCardState extends State<ShipCard> {
         Provider.of<CartModel>(context, listen: false).setApiLoading = true;
         var response = await Api.calculateShipping(address.zipcode);
         if (response['success']) {
-          var price = response['response']['sedex']['Valor']
-              .replaceAll(RegExp("[^0-9]+"), '');
+          // var price = response['response']['sedex']['Valor']
+          //     .replaceAll(RegExp("[^0-9]+"), '');
           // var delivery = response['response']['sedex']['PrazoEntrega'];
           // context.read<CartModel>().setShippingPrice = int.parse(price);
           Provider.of<CartModel>(context, listen: false).setApiLoading = false;

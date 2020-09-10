@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mystore/controllers/user_provider.dart';
-import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:provider/provider.dart';
 
 class Settings extends StatelessWidget {
@@ -132,7 +131,10 @@ class Settings extends StatelessWidget {
                 SizedBox(height: 15.0),
                 GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamed('/teste');
+                  },
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                     child: Row(

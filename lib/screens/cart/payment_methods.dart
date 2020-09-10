@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
-import 'package:mystore/controllers/global.dart';
 import 'package:mystore/controllers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';

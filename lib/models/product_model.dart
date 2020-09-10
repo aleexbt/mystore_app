@@ -8,7 +8,9 @@ class Product {
   int stock;
   List images;
   List sizes;
+  List variants;
   Category category;
+  bool available;
 
   Product({
     this.id,
@@ -18,7 +20,9 @@ class Product {
     this.stock,
     this.images,
     this.sizes,
+    this.variants,
     this.category,
+    this.available,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -29,7 +33,9 @@ class Product {
         stock: json['stock'],
         images: json['images'],
         sizes: json['sizes'],
+        variants: json['variants'],
         category: Category.fromMap(json['category']),
+        available: json['available'],
       );
 
   Map<String, dynamic> toJson() {
@@ -42,6 +48,8 @@ class Product {
       'images': images,
       'sizes': sizes,
       'category': category,
+      'variants': variants,
+      'available': available,
     };
   }
 }

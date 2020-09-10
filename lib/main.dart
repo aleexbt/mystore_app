@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -92,7 +93,7 @@ class MyApp extends StatelessWidget {
             ),
             pageTransitionsTheme: const PageTransitionsTheme(
               builders: {
-                TargetPlatform.android: ZoomPageTransitionsBuilder(),
+                TargetPlatform.android: FadeThroughPageTransitionsBuilder(),
                 TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
                 TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
               },

@@ -26,7 +26,7 @@ class _SelectAddressState extends State<SelectAddress> {
       if (response['success']) {
         var price = response['response']['sedex']['Valor']
             .replaceAll(RegExp("[^0-9]+"), '');
-        var delivery = response['response']['sedex']['PrazoEntrega'];
+        // var delivery = response['response']['sedex']['PrazoEntrega'];
         context.read<CartModel>().setShippingPrice = int.parse(price);
         context.read<CartModel>().selectedShipping = address.id;
         context.read<CartModel>().setShippingCalcError = false;

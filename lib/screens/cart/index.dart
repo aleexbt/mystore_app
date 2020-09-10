@@ -38,7 +38,7 @@ class _CartNavigatorState extends State<CartNavigator>
                 fullscreenDialog: false,
               );
             case '/select_address':
-              return CupertinoPageRoute(
+              return MaterialPageRoute(
                 builder: (_) => SelectAddress(),
                 fullscreenDialog: false,
               );

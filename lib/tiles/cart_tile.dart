@@ -245,13 +245,23 @@ class _CartTileState extends State<CartTile> {
                                 ),
                               ),
                               GestureDetector(
+                                behavior: HitTestBehavior.translucent,
                                 onTap: () {
                                   context
                                       .read<CartModel>()
                                       .removeCartItem(widget.cartProduct);
                                   Navigator.pop(context);
+                                  if (context.read<CartModel>().productCount ==
+                                      0) {
+                                    Navigator.pop(context);
+                                  }
                                 },
-                                child: Text('Remover'),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete_outline, size: 20.0),
+                                    Text('REMOVER'),
+                                  ],
+                                ),
                               ),
                             ],
                           ),

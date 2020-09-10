@@ -1,9 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:mystore/components/image_loader.dart';
 import 'package:mystore/constants.dart';
-import 'package:mystore/helpers/network_error.dart';
+// import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/helpers/no_glow_behavior.dart';
 import 'package:mystore/models/network_model.dart';
 import 'package:mystore/services/api.dart';

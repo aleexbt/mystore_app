@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mystore/components/image_loader.dart';
-import 'package:mystore/datas/product_data.dart';
 import 'package:intl/intl.dart';
 import 'package:mystore/models/product_model.dart';
 
@@ -14,7 +13,8 @@ class ProductTile extends StatelessWidget {
     final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, '/product', arguments: product.id);
+        Navigator.of(context, rootNavigator: true)
+            .pushNamed('/home/product', arguments: product.id);
       },
       child: Card(
         child: type == 'grid'

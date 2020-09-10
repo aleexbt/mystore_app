@@ -4,17 +4,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:jwt_decode/jwt_decode.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as s;
 import 'package:mystore/models/network_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const bool isProduction = bool.fromEnvironment('dart.vm.product');
 Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-final _storage = FlutterSecureStorage();
+final _storage = s.FlutterSecureStorage();
 
 final String baseUrl = isProduction
     ? 'https://xelapps-mystore.herokuapp.com'
-    : 'https://27fb568bfb25.ngrok.io';
+    : 'https://24634d4bf040.ngrok.io';
 
 BaseOptions options = BaseOptions(
   connectTimeout: 8000,
@@ -329,6 +329,12 @@ class Api {
   }
 
   static Future calculateShipping(String cep) async {
+    BaseOptions options = BaseOptions(
+      connectTimeout: 60000,
+      receiveTimeout: 60000,
+    );
+
+    Dio dio = Dio(options);
     Response response = await dio.get(baseUrl + '/services/frete/$cep');
     return response.data;
   }

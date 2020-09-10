@@ -23,6 +23,7 @@ class Product extends StatefulWidget {
 }
 
 class _ProductState extends State<Product> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   p.Product product;
   String size;
   int qtd = 1;
@@ -66,6 +67,7 @@ class _ProductState extends State<Product> {
     final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: true,
         leading: IconButton(
@@ -172,23 +174,58 @@ class _ProductState extends State<Product> {
       ),
       bottomNavigationBar: SizedBox(
         height: 55.0,
-        child: FlatButton(
-          shape: ContinuousRectangleBorder(),
-          color: kPrimaryColor,
-          disabledColor: kPrimaryColor.withOpacity(0.5),
-          disabledTextColor: Colors.grey[600],
-          textColor: Colors.white,
-          onPressed: () =>
-              product?.id != null ? _selectProductSize(context) : null,
-          child: Text(
-            'SELECIONAR',
-          ),
-        ),
+        child: _buyButton(context),
       ),
     );
   }
 
-  void _selectProductSize(context) {
+  _buyButton(BuildContext context) {
+    if (product?.id == null) {
+      return Container();
+    } else if (product?.available == null || !product.available) {
+      return FlatButton(
+        shape: ContinuousRectangleBorder(),
+        color: kPrimaryColor,
+        disabledColor: kPrimaryColor.withOpacity(0.5),
+        disabledTextColor: Colors.grey[600],
+        textColor: Colors.white,
+        onPressed: null,
+        child: Text(
+          'PRODUTO INDISPONÍVEL',
+        ),
+      );
+      // } else if (context.watch<CartModel>().products.isNotEmpty &&
+      //     context.watch<CartModel>().products.firstWhere(
+      //             (element) => element.productId == product.id,
+      //             orElse: null) !=
+      //         null) {
+      //   return FlatButton(
+      //     shape: ContinuousRectangleBorder(),
+      //     color: kPrimaryColor,
+      //     disabledColor: kPrimaryColor.withOpacity(0.5),
+      //     disabledTextColor: Colors.grey[600],
+      //     textColor: Colors.white,
+      //     onPressed: null,
+      //     child: Text(
+      //       'PRODUTO INDISPONÍVEL 0',
+      //     ),
+      //   );
+    } else {
+      return FlatButton(
+        shape: ContinuousRectangleBorder(),
+        color: kPrimaryColor,
+        disabledColor: kPrimaryColor.withOpacity(0.5),
+        disabledTextColor: Colors.grey[600],
+        textColor: Colors.white,
+        onPressed: () => _selectProduct(context),
+        child: Text(
+          'SELECIONAR',
+        ),
+      );
+    }
+  }
+
+  void _selectProduct(context) {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -209,10 +246,10 @@ class _ProductState extends State<Product> {
                         child: Column(
                           children: [
                             Container(
-                              width: 70.0,
-                              height: 7.0,
+                              width: 40.0,
+                              height: 4.0,
                               decoration: BoxDecoration(
-                                color: Colors.grey[400],
+                                color: Colors.grey[300],
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
                             ),
@@ -234,14 +271,18 @@ class _ProductState extends State<Product> {
                                 ),
                                 SizedBox(height: 5.0),
                                 Row(
-                                  children: product.sizes.map((s) {
+                                  children: product.variants
+                                      .where((element) => element['qtd'] >= 1)
+                                      .map((s) {
                                     return GestureDetector(
                                       onTap: () {
                                         setModalState(() {
-                                          size = s;
+                                          size = s['size'];
+                                          qtd = 1;
                                         });
                                         setState(() {
-                                          size = s;
+                                          size = s['size'];
+                                          qtd = 1;
                                         });
                                       },
                                       child: Padding(
@@ -253,7 +294,7 @@ class _ProductState extends State<Product> {
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                             border: Border.all(
-                                              color: s == size
+                                              color: s['size'] == size
                                                   ? kPrimaryColor
                                                   : Colors.grey[400],
                                               width: 1.0,
@@ -262,9 +303,9 @@ class _ProductState extends State<Product> {
                                                 BorderRadius.circular(4.0),
                                           ),
                                           child: Text(
-                                            s,
+                                            s['size'],
                                             style: TextStyle(
-                                              color: s == size
+                                              color: s['size'] == size
                                                   ? kPrimaryColor
                                                   : Colors.grey[400],
                                             ),
@@ -323,11 +364,18 @@ class _ProductState extends State<Product> {
                                           color: kPrimaryColor,
                                         ),
                                         onPressed: () {
-                                          setModalState(() {
-                                            setState(() {
-                                              qtd++;
+                                          int stock = product.variants
+                                              .firstWhere(
+                                                  (element) =>
+                                                      element['size'] == size,
+                                                  orElse: () => 0)['qtd'];
+                                          if (qtd < stock) {
+                                            setModalState(() {
+                                              setState(() {
+                                                qtd++;
+                                              });
                                             });
-                                          });
+                                          }
                                         },
                                       ),
                                     ],
@@ -363,30 +411,12 @@ class _ProductState extends State<Product> {
                                 context
                                     .read<CartModel>()
                                     .addCartItem(cartProduct);
-                                AwesomeDialog(
-                                  context: context,
-                                  animType: AnimType.BOTTOMSLIDE,
-                                  headerAnimationLoop: false,
-                                  dialogType: DialogType.SUCCES,
-                                  title: 'Tudo certo',
-                                  useRootNavigator: true,
-                                  padding: EdgeInsets.only(left: 10, right: 10),
-                                  desc:
-                                      'Este produto foi adicionado ao seu carrinho com sucesso.',
-                                  btnOkText: 'OK',
-                                  btnOkOnPress: () {
-                                    //Navigator.pop(context);
-                                  },
-                                  onDissmissCallback: () {
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                  },
-                                  btnOkIcon: Icons.check_circle,
-                                )..show();
+                                Navigator.pop(context);
+                                _successDialog();
                               }
                             : null,
                         child: Text(
-                          'Adicionar ao carrinho',
+                          'ADICIONAR AO CARRINHO',
                         ),
                       ),
                     ),
@@ -398,5 +428,25 @@ class _ProductState extends State<Product> {
         );
       },
     );
+  }
+
+  void _successDialog() {
+    AwesomeDialog(
+      context: _scaffoldKey.currentContext,
+      animType: AnimType.BOTTOMSLIDE,
+      headerAnimationLoop: false,
+      dialogType: DialogType.SUCCES,
+      title: 'Tudo certo',
+      useRootNavigator: true,
+      padding: EdgeInsets.only(left: 10, right: 10),
+      desc: 'Este produto foi adicionado ao seu carrinho com sucesso.',
+      btnOkText: 'OK',
+      btnOkOnPress: () {},
+      onDissmissCallback: () {
+        Navigator.pop(context);
+      },
+      btnOkIcon: Icons.check_circle,
+      btnOkColor: kPrimaryColor,
+    )..show();
   }
 }

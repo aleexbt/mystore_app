@@ -250,6 +250,7 @@ class CartModel extends ChangeNotifier {
       _selectedShipping = null;
       _paymentMethod = null;
       _paymentChange = 0;
+      _shippingPrice = 0;
       notifyListeners();
       _saveData();
       return {'success': true, 'orderId': response.data['order']};
@@ -257,7 +258,23 @@ class CartModel extends ChangeNotifier {
       // print(response.data['msg']);
       isLoading = false;
       notifyListeners();
-      return {'success': false, 'msg': response.data['msg']};
+      return {
+        'success': false,
+        'title': response.data['title'],
+        'msg': response.data['msg'],
+      };
     }
+  }
+
+  clearCart() async {
+    products = [];
+    setCouponCode = '';
+    setDiscountPercentage = 0;
+    _selectedShipping = null;
+    _shippingPrice = 0;
+    _paymentMethod = null;
+    _paymentChange = 0;
+    notifyListeners();
+    _saveData();
   }
 }

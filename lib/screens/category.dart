@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mystore/constants.dart';
-import 'package:mystore/datas/product_data.dart';
 import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/models/network_model.dart';
 import 'package:mystore/models/product_model.dart';

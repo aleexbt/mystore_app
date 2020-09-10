@@ -29,12 +29,14 @@ class _CheckoutState extends State<Checkout> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        automaticallyImplyLeading: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('RESUMO DO PEDIDO'),
+        automaticallyImplyLeading: false,
+        leading: !_isFinished
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
+        title: Text(!_isFinished ? 'RESUMO DO PEDIDO' : 'PEDIDO CONCLUÍDO'),
       ),
       body: ModalProgressHUD(
         inAsyncCall: _isLoading,
@@ -47,44 +49,53 @@ class _CheckoutState extends State<Checkout> {
                 return Center(
                   child: Padding(
                     padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height / 4),
+                        top: MediaQuery.of(context).size.height / 6),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Icon(
-                          Icons.check,
-                          color: Colors.teal,
-                          size: 80.0,
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: SvgPicture.asset(
+                            'assets/successful_purchase.svg',
+                            semanticsLabel: 'Compra concluída',
+                            width: 300.0,
+                          ),
                         ),
                         Text(
                           'Pedido realizado com sucesso!',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             fontSize: 18.0,
                           ),
                         ),
+                        SizedBox(height: 6.0),
                         Text(
-                          'Código do pedido: $_orderId',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                          ),
+                          'ID: #$_orderId',
+                          style: TextStyle(),
                         ),
                         SizedBox(height: 16.0),
                         SizedBox(
                           height: 50.0,
-                          child: RaisedButton(
+                          child: FlatButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
                             color: kPrimaryColor,
                             textColor: Colors.white,
                             onPressed: () {
-                              NavKey.pageController.animateToPage(
-                                2,
-                                duration: Duration(milliseconds: 200),
-                                curve: Curves.linear,
-                              );
+                              NavKey.pageController.jumpToPage(2);
+                              Navigator.pop(context);
                               Navigator.pop(context);
                             },
-                            child: Text('Ir para meus pedidos'),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('CONTINUAR'),
+                                SizedBox(width: 6.0),
+                                Icon(Icons.arrow_forward_ios)
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -144,23 +155,33 @@ class _CheckoutState extends State<Checkout> {
                           itemCount: data.products.length,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                    '${data.products[index].qtd}x ' +
-                                        data.products[index].title,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey[700],
-                                    )),
-                                Text(
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      '${data.products[index].qtd}x ' +
+                                          data.products[index].title,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey[700],
+                                      ),
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                  Text(
                                     '${currency.format(data.products[index].price / 100)}',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.grey[700],
-                                    )),
-                              ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           },
                         ),
@@ -297,56 +318,52 @@ class _CheckoutState extends State<Checkout> {
                   Provider.of<CartModel>(context).paymentMethod == null
                       ? selectPaymentType(context, prices, ship, discount)
                       : selectedPaymentType(context, prices, ship, discount),
-                  SizedBox(height: 14.0),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      height: 45.0,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        onPressed: Provider.of<CartModel>(context)
-                                    .paymentMethod !=
-                                null
-                            ? () async {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-
-                                Map<String, dynamic> resCheckout =
-                                    await Provider.of<CartModel>(context,
-                                            listen: false)
-                                        .finishOrder(context);
-
-                                if (resCheckout['success']) {
-                                  setState(() {
-                                    _orderId = resCheckout['orderId'];
-                                    _isFinished = true;
-                                    _isLoading = false;
-                                  });
-                                  NavKey.productsKey.currentState.pop();
-                                  NavKey.productsKey.currentState.pop();
-                                } else {
-                                  setState(() {
-                                    _isLoading = false;
-                                  });
-                                  _checkoutError2(context, resCheckout['msg']);
-                                }
-                              }
-                            : null,
-                        color: Color.fromARGB(255, 211, 110, 130),
-                        textColor: Colors.white,
-                        child: Text('FINALIZAR COMPRA'),
-                      ),
-                    ),
-                  )
+                  //SizedBox(height: 14.0),
                 ],
               );
             }),
           ),
         ),
       ),
+      bottomNavigationBar: !_isFinished
+          ? SizedBox(
+              height: 55.0,
+              child: FlatButton(
+                disabledColor: kPrimaryColor.withOpacity(0.5),
+                disabledTextColor: Colors.grey[200],
+                shape: ContinuousRectangleBorder(),
+                onPressed: Provider.of<CartModel>(context).paymentMethod != null
+                    ? () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+
+                        Map<String, dynamic> resCheckout =
+                            await Provider.of<CartModel>(context, listen: false)
+                                .finishOrder(context);
+
+                        if (resCheckout['success']) {
+                          setState(() {
+                            _orderId = resCheckout['orderId'];
+                            _isFinished = true;
+                            _isLoading = false;
+                          });
+                          // NavKey.productsKey.currentState.pop();
+                        } else {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          _checkoutError2(context, resCheckout['title'],
+                              resCheckout['msg']);
+                        }
+                      }
+                    : null,
+                color: Color.fromARGB(255, 211, 110, 130),
+                textColor: Colors.white,
+                child: Text('FINALIZAR COMPRA'),
+              ),
+            )
+          : Container(height: 0.0),
     );
   }
 
@@ -504,10 +521,10 @@ class _CheckoutState extends State<Checkout> {
     }
   }
 
-  void _checkoutError2(context, String msg) {
+  void _checkoutError2(context, String title, String msg) {
     EdgeAlert.show(
       context,
-      title: 'Pagamento recusado',
+      title: title,
       description: msg,
       gravity: EdgeAlert.TOP,
       backgroundColor: Colors.red,

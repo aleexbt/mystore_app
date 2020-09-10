@@ -9,8 +9,6 @@ import 'package:mystore/screens/settings/payment_editor.dart';
 import 'package:mystore/screens/settings/profile.dart';
 import 'package:mystore/screens/settings/settings.dart';
 
-import 'package:page_transition/page_transition.dart';
-
 class SettingsNavigator extends StatefulWidget {
   @override
   _SettingsNavigatorState createState() => _SettingsNavigatorState();
@@ -35,7 +33,7 @@ class _SettingsNavigatorState extends State<SettingsNavigator>
                 builder: (_) => Settings(),
               );
             case '/settings/profile':
-              return CupertinoPageRoute(
+              return MaterialPageRoute(
                 builder: (_) => Profile(profileData: args),
               );
             // return PageTransition(
