@@ -14,7 +14,7 @@ final _storage = s.FlutterSecureStorage();
 
 final String baseUrl = isProduction
     ? 'https://xelapps-mystore.herokuapp.com'
-    : 'https://24634d4bf040.ngrok.io';
+    : 'https://a2d5f654528f.ngrok.io';
 
 BaseOptions options = BaseOptions(
   connectTimeout: 8000,

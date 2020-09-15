@@ -1,6 +1,7 @@
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:mystore/components/image_loader.dart';
+import 'package:mystore/components/product_options.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
@@ -262,127 +263,128 @@ class _ProductState extends State<Product> {
                               ),
                             ),
                             SizedBox(height: 10.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Tamanho',
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                                SizedBox(height: 5.0),
-                                Row(
-                                  children: product.variants
-                                      .where((element) => element['qtd'] >= 1)
-                                      .map((s) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setModalState(() {
-                                          size = s['size'];
-                                          qtd = 1;
-                                        });
-                                        setState(() {
-                                          size = s['size'];
-                                          qtd = 1;
-                                        });
-                                      },
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 8.0),
-                                        child: Container(
-                                          width: 50.0,
-                                          height: 40.0,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: s['size'] == size
-                                                  ? kPrimaryColor
-                                                  : Colors.grey[400],
-                                              width: 1.0,
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(4.0),
-                                          ),
-                                          child: Text(
-                                            s['size'],
-                                            style: TextStyle(
-                                              color: s['size'] == size
-                                                  ? kPrimaryColor
-                                                  : Colors.grey[400],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                                SizedBox(height: 10.0),
-                                Text(
-                                  'Quantidade',
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                  ),
-                                ),
-                                SizedBox(height: 5.0),
-                                Container(
-                                  width: 120.0,
-                                  height: 45.0,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.grey[400],
-                                      width: 1.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.remove,
-                                            color: qtd == 1
-                                                ? Colors.grey[400]
-                                                : kPrimaryColor,
-                                          ),
-                                          onPressed: () {
-                                            if (qtd >= 2) {
-                                              setModalState(() {
-                                                setState(() {
-                                                  qtd--;
-                                                });
-                                              });
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                      Text(qtd.toString()),
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.add,
-                                          color: kPrimaryColor,
-                                        ),
-                                        onPressed: () {
-                                          int stock = product.variants
-                                              .firstWhere(
-                                                  (element) =>
-                                                      element['size'] == size,
-                                                  orElse: () => 0)['qtd'];
-                                          if (qtd < stock) {
-                                            setModalState(() {
-                                              setState(() {
-                                                qtd++;
-                                              });
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                            ProductOptions(product),
+                            // Column(
+                            //   crossAxisAlignment: CrossAxisAlignment.start,
+                            //   children: [
+                            //     Text(
+                            //       product.variants[0].name,
+                            //       style: TextStyle(fontSize: 16.0),
+                            //     ),
+                            //     SizedBox(height: 5.0),
+                            //     Row(
+                            //       children: product.variants[0].options
+                            //           .where((element) => element.qtd >= 1)
+                            //           .map((s) {
+                            //         return GestureDetector(
+                            //           onTap: () {
+                            //             setModalState(() {
+                            //               size = s.value;
+                            //               qtd = 1;
+                            //             });
+                            //             setState(() {
+                            //               size = s.value;
+                            //               qtd = 1;
+                            //             });
+                            //           },
+                            //           child: Padding(
+                            //             padding:
+                            //                 const EdgeInsets.only(right: 8.0),
+                            //             child: Container(
+                            //               width: 50.0,
+                            //               height: 40.0,
+                            //               alignment: Alignment.center,
+                            //               decoration: BoxDecoration(
+                            //                 border: Border.all(
+                            //                   color: s.value == size
+                            //                       ? kPrimaryColor
+                            //                       : Colors.grey[400],
+                            //                   width: 1.0,
+                            //                 ),
+                            //                 borderRadius:
+                            //                     BorderRadius.circular(4.0),
+                            //               ),
+                            //               child: Text(
+                            //                 s.value,
+                            //                 style: TextStyle(
+                            //                   color: s.value == size
+                            //                       ? kPrimaryColor
+                            //                       : Colors.grey[400],
+                            //                 ),
+                            //               ),
+                            //             ),
+                            //           ),
+                            //         );
+                            //       }).toList(),
+                            //     ),
+                            //     SizedBox(height: 10.0),
+                            //     Text(
+                            //       'Quantidade',
+                            //       style: TextStyle(
+                            //         fontSize: 16.0,
+                            //       ),
+                            //     ),
+                            //     SizedBox(height: 5.0),
+                            //     Container(
+                            //       width: 120.0,
+                            //       height: 45.0,
+                            //       alignment: Alignment.center,
+                            //       decoration: BoxDecoration(
+                            //         border: Border.all(
+                            //           color: Colors.grey[400],
+                            //           width: 1.0,
+                            //         ),
+                            //         borderRadius: BorderRadius.circular(4.0),
+                            //       ),
+                            //       child: Row(
+                            //         mainAxisAlignment:
+                            //             MainAxisAlignment.spaceBetween,
+                            //         children: [
+                            //           SizedBox(
+                            //             child: IconButton(
+                            //               icon: Icon(
+                            //                 Icons.remove,
+                            //                 color: qtd == 1
+                            //                     ? Colors.grey[400]
+                            //                     : kPrimaryColor,
+                            //               ),
+                            //               onPressed: () {
+                            //                 if (qtd >= 2) {
+                            //                   setModalState(() {
+                            //                     setState(() {
+                            //                       qtd--;
+                            //                     });
+                            //                   });
+                            //                 }
+                            //               },
+                            //             ),
+                            //           ),
+                            //           Text(qtd.toString()),
+                            //           IconButton(
+                            //             icon: Icon(
+                            //               Icons.add,
+                            //               color: kPrimaryColor,
+                            //             ),
+                            //             onPressed: () {
+                            //               // int stock = product.variants
+                            //               //     .firstWhere(
+                            //               //         (element) =>
+                            //               //             element['size'] == size,
+                            //               //         orElse: () => 0)['qtd'];
+                            //               // if (qtd < stock) {
+                            //               //   setModalState(() {
+                            //               //     setState(() {
+                            //               //       qtd++;
+                            //               //     });
+                            //               //   });
+                            //               // }
+                            //             },
+                            //           ),
+                            //         ],
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                           ],
                         ),
                       ),
