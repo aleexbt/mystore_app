@@ -20,26 +20,24 @@ class ProductVariantsOptions {
 }
 
 class ProductVariants {
-  String name;
-  String selectType;
-  String optionsType;
-  List<ProductVariantsOptions> options;
+  String id;
+  String size;
+  String color;
+  int qtd;
 
   ProductVariants({
-    this.name,
-    this.selectType,
-    this.optionsType,
-    this.options,
+    this.id,
+    this.size,
+    this.color,
+    this.qtd,
   });
 
   factory ProductVariants.fromJson(Map<String, dynamic> json) =>
       ProductVariants(
-        name: json['name'],
-        selectType: json['selectType'],
-        optionsType: json['optionsType'],
-        options: (json['options'] as List)
-            .map((i) => ProductVariantsOptions.fromJson(i))
-            .toList(),
+        id: json['_id'],
+        size: json['size'],
+        color: json['color'],
+        qtd: json['qtd'],
       );
 }
 
@@ -52,6 +50,8 @@ class Product {
   List images;
   List sizes;
   List<ProductVariants> variants;
+  List availableSizes;
+  List availableColors;
   Category category;
   bool available;
 
@@ -64,6 +64,8 @@ class Product {
     this.images,
     this.sizes,
     this.variants,
+    this.availableSizes,
+    this.availableColors,
     this.category,
     this.available,
   });
@@ -98,9 +100,10 @@ class Product {
         variants.add(ProductVariants.fromJson(v));
       });
     }
-    category = json['category'] != null
-        ? new Category.fromMap(json['category'])
-        : null;
+    availableSizes = json['availableSizes'];
+    availableColors = json['availableColors'];
+    category =
+        json['category'] != null ? Category.fromMap(json['category']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -114,6 +117,8 @@ class Product {
       'sizes': sizes,
       'category': category,
       'variants': variants,
+      'availableSizes': availableSizes,
+      'availableColors': availableColors,
       'available': available,
     };
   }

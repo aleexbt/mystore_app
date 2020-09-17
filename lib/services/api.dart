@@ -14,7 +14,7 @@ final _storage = s.FlutterSecureStorage();
 
 final String baseUrl = isProduction
     ? 'https://xelapps-mystore.herokuapp.com'
-    : 'https://a2d5f654528f.ngrok.io';
+    : 'https://b744554bf533.ngrok.io';
 
 BaseOptions options = BaseOptions(
   connectTimeout: 8000,
@@ -375,5 +375,45 @@ class Api {
       data: {'products': products},
     );
     return response;
+  }
+
+  static Future checkStock(String id, Map<String, dynamic> data) async {
+    try {
+      Response response =
+          await dio.post(baseUrl + '/stock/check/$id', data: data);
+      return NetworkHandler(
+        statusCode: response.statusCode,
+        error: false,
+        response: response.data,
+      );
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.CONNECT_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 523,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
+        return NetworkHandler(
+          statusCode: 524,
+          error: true,
+          response: null,
+        );
+      }
+      if (e.response == null) {
+        return NetworkHandler(
+          statusCode: 502,
+          error: true,
+          response: null,
+        );
+      } else {
+        return NetworkHandler(
+          statusCode: e.response.statusCode,
+          error: true,
+          response: e.response.data,
+        );
+      }
+    }
   }
 }

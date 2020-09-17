@@ -210,11 +210,13 @@ class _AppState extends State<App> {
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Icon(AntDesign.home),
-                  label: 'Início',
+                  // label: 'Início',
+                  title: Text('Início'),
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(AntDesign.appstore_o),
-                  label: 'Produtos',
+                  // label: 'Produtos',
+                  title: Text('Produtos'),
                 ),
                 // BottomNavigationBarItem(
                 //   icon: Icon(Icons.store),
@@ -222,7 +224,8 @@ class _AppState extends State<App> {
                 // ),
                 BottomNavigationBarItem(
                   icon: Icon(Feather.file_text),
-                  label: 'Pedidos',
+                  // label: 'Pedidos',
+                  title: Text('Pedidos'),
                 ),
                 // BottomNavigationBarItem(
                 //   icon: context.watch<CartModel>().productCount == 0
@@ -242,7 +245,8 @@ class _AppState extends State<App> {
                 // ),
                 BottomNavigationBarItem(
                   icon: Icon(AntDesign.user),
-                  label: 'Sua Conta',
+                  // label: 'Sua Conta',
+                  title: Text('Sua Conta'),
                 )
               ],
               currentIndex: _selectedIndex,

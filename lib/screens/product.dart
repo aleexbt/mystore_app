@@ -1,7 +1,7 @@
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:mystore/components/image_loader.dart';
-import 'package:mystore/components/product_options.dart';
+// import 'package:mystore/components/product_options.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
@@ -27,6 +27,7 @@ class _ProductState extends State<Product> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   p.Product product;
   String size;
+  String color;
   int qtd = 1;
   Future _getProduct;
   bool networkError = false;
@@ -61,6 +62,22 @@ class _ProductState extends State<Product> {
       networkStatusCode = null;
     });
     _getProduct = getProduct();
+  }
+
+  Future<bool> checkStock({String cSize, String cColor, int cQtd}) async {
+    Map<String, dynamic> data = {
+      'size': cSize ?? size,
+      'color': cColor ?? color,
+      'qtd': cQtd ?? qtd,
+    };
+    NetworkHandler network = await Api.checkStock(widget.pid, data);
+    if (network.error) {
+      debugPrint('network error');
+      return false;
+    } else {
+      debugPrint(network.response['available'].toString());
+      return network.response['available'];
+    }
   }
 
   @override
@@ -195,22 +212,6 @@ class _ProductState extends State<Product> {
           'PRODUTO INDISPONÍVEL',
         ),
       );
-      // } else if (context.watch<CartModel>().products.isNotEmpty &&
-      //     context.watch<CartModel>().products.firstWhere(
-      //             (element) => element.productId == product.id,
-      //             orElse: null) !=
-      //         null) {
-      //   return FlatButton(
-      //     shape: ContinuousRectangleBorder(),
-      //     color: kPrimaryColor,
-      //     disabledColor: kPrimaryColor.withOpacity(0.5),
-      //     disabledTextColor: Colors.grey[600],
-      //     textColor: Colors.white,
-      //     onPressed: null,
-      //     child: Text(
-      //       'PRODUTO INDISPONÍVEL 0',
-      //     ),
-      //   );
     } else {
       return FlatButton(
         shape: ContinuousRectangleBorder(),
@@ -227,6 +228,7 @@ class _ProductState extends State<Product> {
   }
 
   void _selectProduct(context) {
+    bool isLoading = false;
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -263,128 +265,259 @@ class _ProductState extends State<Product> {
                               ),
                             ),
                             SizedBox(height: 10.0),
-                            ProductOptions(product),
-                            // Column(
-                            //   crossAxisAlignment: CrossAxisAlignment.start,
-                            //   children: [
-                            //     Text(
-                            //       product.variants[0].name,
-                            //       style: TextStyle(fontSize: 16.0),
-                            //     ),
-                            //     SizedBox(height: 5.0),
-                            //     Row(
-                            //       children: product.variants[0].options
-                            //           .where((element) => element.qtd >= 1)
-                            //           .map((s) {
-                            //         return GestureDetector(
-                            //           onTap: () {
-                            //             setModalState(() {
-                            //               size = s.value;
-                            //               qtd = 1;
-                            //             });
-                            //             setState(() {
-                            //               size = s.value;
-                            //               qtd = 1;
-                            //             });
-                            //           },
-                            //           child: Padding(
-                            //             padding:
-                            //                 const EdgeInsets.only(right: 8.0),
-                            //             child: Container(
-                            //               width: 50.0,
-                            //               height: 40.0,
-                            //               alignment: Alignment.center,
-                            //               decoration: BoxDecoration(
-                            //                 border: Border.all(
-                            //                   color: s.value == size
-                            //                       ? kPrimaryColor
-                            //                       : Colors.grey[400],
-                            //                   width: 1.0,
-                            //                 ),
-                            //                 borderRadius:
-                            //                     BorderRadius.circular(4.0),
-                            //               ),
-                            //               child: Text(
-                            //                 s.value,
-                            //                 style: TextStyle(
-                            //                   color: s.value == size
-                            //                       ? kPrimaryColor
-                            //                       : Colors.grey[400],
-                            //                 ),
-                            //               ),
-                            //             ),
-                            //           ),
-                            //         );
-                            //       }).toList(),
-                            //     ),
-                            //     SizedBox(height: 10.0),
-                            //     Text(
-                            //       'Quantidade',
-                            //       style: TextStyle(
-                            //         fontSize: 16.0,
-                            //       ),
-                            //     ),
-                            //     SizedBox(height: 5.0),
-                            //     Container(
-                            //       width: 120.0,
-                            //       height: 45.0,
-                            //       alignment: Alignment.center,
-                            //       decoration: BoxDecoration(
-                            //         border: Border.all(
-                            //           color: Colors.grey[400],
-                            //           width: 1.0,
-                            //         ),
-                            //         borderRadius: BorderRadius.circular(4.0),
-                            //       ),
-                            //       child: Row(
-                            //         mainAxisAlignment:
-                            //             MainAxisAlignment.spaceBetween,
-                            //         children: [
-                            //           SizedBox(
-                            //             child: IconButton(
-                            //               icon: Icon(
-                            //                 Icons.remove,
-                            //                 color: qtd == 1
-                            //                     ? Colors.grey[400]
-                            //                     : kPrimaryColor,
-                            //               ),
-                            //               onPressed: () {
-                            //                 if (qtd >= 2) {
-                            //                   setModalState(() {
-                            //                     setState(() {
-                            //                       qtd--;
-                            //                     });
-                            //                   });
-                            //                 }
-                            //               },
-                            //             ),
-                            //           ),
-                            //           Text(qtd.toString()),
-                            //           IconButton(
-                            //             icon: Icon(
-                            //               Icons.add,
-                            //               color: kPrimaryColor,
-                            //             ),
-                            //             onPressed: () {
-                            //               // int stock = product.variants
-                            //               //     .firstWhere(
-                            //               //         (element) =>
-                            //               //             element['size'] == size,
-                            //               //         orElse: () => 0)['qtd'];
-                            //               // if (qtd < stock) {
-                            //               //   setModalState(() {
-                            //               //     setState(() {
-                            //               //       qtd++;
-                            //               //     });
-                            //               //   });
-                            //               // }
-                            //             },
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
+                            //ProductOptions(product, setModalState),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Visibility(
+                                      visible:
+                                          product.availableSizes.length > 0,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Tamanho',
+                                            style: TextStyle(fontSize: 16.0),
+                                          ),
+                                          SizedBox(height: 5.0),
+                                          Row(
+                                            children:
+                                                product.availableSizes.map(
+                                              (s) {
+                                                return GestureDetector(
+                                                  onTap: () async {
+                                                    setModalState(() {
+                                                      setState(() {
+                                                        color = null;
+                                                        qtd = 1;
+                                                      });
+                                                      isLoading = true;
+                                                    });
+                                                    bool result =
+                                                        await checkStock(
+                                                      cSize: s,
+                                                      cQtd: 1,
+                                                    );
+                                                    if (result) {
+                                                      setModalState(() {
+                                                        setState(() {
+                                                          size = s;
+                                                          color = null;
+                                                          qtd = 1;
+                                                        });
+                                                      });
+                                                    }
+                                                    setModalState(() {
+                                                      isLoading = false;
+                                                    });
+                                                  },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8.0),
+                                                    child: Container(
+                                                      width: 50.0,
+                                                      height: 40.0,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color: s == size
+                                                              ? kPrimaryColor
+                                                              : Colors
+                                                                  .grey[400],
+                                                          width: 1.0,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(4.0),
+                                                      ),
+                                                      child: Text(
+                                                        s,
+                                                        style: TextStyle(
+                                                          color: s == size
+                                                              ? kPrimaryColor
+                                                              : Colors
+                                                                  .grey[400],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ).toList(),
+                                          ),
+                                          SizedBox(height: 10.0),
+                                        ],
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          product.availableColors.length > 0,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Cor',
+                                            style: TextStyle(fontSize: 16.0),
+                                          ),
+                                          SizedBox(height: 5.0),
+                                          Row(
+                                            children:
+                                                product.availableColors.map(
+                                              (c) {
+                                                return GestureDetector(
+                                                  onTap: size != null
+                                                      ? () async {
+                                                          setModalState(() {
+                                                            setState(() {
+                                                              // qtd = 1;
+                                                            });
+                                                            isLoading = true;
+                                                          });
+                                                          bool result =
+                                                              await checkStock(
+                                                            cColor: c,
+                                                            cQtd: 1,
+                                                          );
+                                                          if (result) {
+                                                            setModalState(() {
+                                                              setState(() {
+                                                                color = c;
+                                                                qtd = 1;
+                                                              });
+                                                            });
+                                                          }
+                                                          setModalState(() {
+                                                            isLoading = false;
+                                                          });
+                                                        }
+                                                      : null,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8.0),
+                                                    child: Container(
+                                                      height: 40.0,
+                                                      alignment:
+                                                          Alignment.center,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color: c == color
+                                                              ? kPrimaryColor
+                                                              : Colors
+                                                                  .grey[400],
+                                                          width: 1.0,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(4.0),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(
+                                                          10.0,
+                                                        ),
+                                                        child: Text(
+                                                          c,
+                                                          style: TextStyle(
+                                                            color: c == color
+                                                                ? kPrimaryColor
+                                                                : Colors
+                                                                    .grey[400],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ).toList(),
+                                          ),
+                                          SizedBox(height: 10.0),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                //SizedBox(height: 10.0),
+                                Text(
+                                  'Quantidade',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                                SizedBox(height: 5.0),
+                                Container(
+                                  width: 120.0,
+                                  height: 45.0,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey[400],
+                                      width: 1.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.remove,
+                                            color: Colors.grey[400],
+                                          ),
+                                          onPressed: () {
+                                            if (qtd >= 2) {
+                                              setModalState(() {
+                                                setState(() {
+                                                  qtd--;
+                                                });
+                                              });
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                      Text(qtd.toString()),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.add,
+                                          color: kPrimaryColor,
+                                        ),
+                                        onPressed: size != null && color != null
+                                            ? () async {
+                                                setModalState(() {
+                                                  isLoading = true;
+                                                });
+                                                bool result =
+                                                    await checkStock();
+                                                if (result) {
+                                                  setModalState(() {
+                                                    setState(() {
+                                                      qtd++;
+                                                    });
+                                                  });
+                                                }
+                                                setModalState(() {
+                                                  isLoading = false;
+                                                });
+                                              }
+                                            : null,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -399,7 +532,8 @@ class _ProductState extends State<Product> {
                         disabledTextColor: Colors.grey[600],
                         textColor: Colors.white,
                         onPressed: size != null &&
-                                context.watch<UserModel>().isLoggedIn
+                                context.watch<UserModel>().isLoggedIn &&
+                                !isLoading
                             ? () {
                                 CartProduct cartProduct = CartProduct(
                                   productId: product.id,
@@ -417,9 +551,12 @@ class _ProductState extends State<Product> {
                                 _successDialog();
                               }
                             : null,
-                        child: Text(
-                          'ADICIONAR AO CARRINHO',
-                        ),
+                        child: isLoading
+                            ? CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white),
+                              )
+                            : Text('ADICIONAR AO CARRINHO'),
                       ),
                     ),
                   ],
