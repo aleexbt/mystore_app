@@ -1,32 +1,11 @@
 import 'category_model.dart';
 
-class ProductVariantsOptions {
-  String label;
-  String value;
-  int qtd;
-
-  ProductVariantsOptions({
-    this.label,
-    this.value,
-    this.qtd,
-  });
-
-  factory ProductVariantsOptions.fromJson(Map<String, dynamic> json) =>
-      ProductVariantsOptions(
-        label: json['label'],
-        value: json['value'],
-        qtd: json['qtd'],
-      );
-}
-
 class ProductVariants {
-  String id;
   String size;
   String color;
   int qtd;
 
   ProductVariants({
-    this.id,
     this.size,
     this.color,
     this.qtd,
@@ -34,7 +13,6 @@ class ProductVariants {
 
   factory ProductVariants.fromJson(Map<String, dynamic> json) =>
       ProductVariants(
-        id: json['_id'],
         size: json['size'],
         color: json['color'],
         qtd: json['qtd'],
@@ -46,12 +24,9 @@ class Product {
   String title;
   String description;
   int price;
-  int stock;
   List images;
   List sizes;
   List<ProductVariants> variants;
-  List availableSizes;
-  List availableColors;
   Category category;
   bool available;
 
@@ -60,12 +35,9 @@ class Product {
     this.title,
     this.description,
     this.price,
-    this.stock,
     this.images,
     this.sizes,
     this.variants,
-    this.availableSizes,
-    this.availableColors,
     this.category,
     this.available,
   });
@@ -92,7 +64,6 @@ class Product {
     description = json['description'];
     sizes = json['sizes'];
     price = json['price'];
-    stock = json['stock'];
     available = json['available'];
     if (json['variants'] != null) {
       variants = List<ProductVariants>();
@@ -100,8 +71,6 @@ class Product {
         variants.add(ProductVariants.fromJson(v));
       });
     }
-    availableSizes = json['availableSizes'];
-    availableColors = json['availableColors'];
     category =
         json['category'] != null ? Category.fromMap(json['category']) : null;
   }
@@ -112,13 +81,10 @@ class Product {
       'title': title,
       'description': description,
       'price': price,
-      'stock': stock,
       'images': images,
       'sizes': sizes,
       'category': category,
       'variants': variants,
-      'availableSizes': availableSizes,
-      'availableColors': availableColors,
       'available': available,
     };
   }

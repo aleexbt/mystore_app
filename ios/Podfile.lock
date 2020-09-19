@@ -5,10 +5,10 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
-  - OneSignal (2.14.3)
-  - onesignal_flutter (2.6.0):
+  - OneSignal (2.15.2)
+  - onesignal_flutter (2.6.1):
     - Flutter
-    - OneSignal (= 2.14.3)
+    - OneSignal (= 2.15.2)
   - path_provider (0.0.1):
     - Flutter
   - shared_preferences (0.0.1):
@@ -54,8 +54,8 @@ SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
-  OneSignal: 7dfe466265c05f02b95a274b9c997a0619ad2117
-  onesignal_flutter: 129551f13dc887d88aaf837e2cd823e1926e8159
+  OneSignal: 9531e385388565f4d31797ddadbe0fcc786430ec
+  onesignal_flutter: b4412973eac419ccce07363e43e0d6057c583a96
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
@@ -63,4 +63,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4276c8252442353b7ec0f75bf1532a6c0a161e2d
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0.rc.1

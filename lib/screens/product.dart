@@ -1,13 +1,13 @@
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:mystore/components/image_loader.dart';
-// import 'package:mystore/components/product_options.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/controllers/cart_provider.dart';
 import 'package:mystore/controllers/user_provider.dart';
 import 'package:mystore/datas/cart_product.dart';
 import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/models/network_model.dart';
+import 'package:mystore/models/product_model.dart';
 import 'package:mystore/services/api.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -26,12 +26,23 @@ class Product extends StatefulWidget {
 class _ProductState extends State<Product> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   p.Product product;
-  String size;
-  String color;
-  int qtd = 1;
+  List<ProductVariants> variants = [];
+  String selectedSize;
+  String selectedColor;
+  int selectedQtd = 0;
+  int totalAvailable = 0;
   Future _getProduct;
   bool networkError = false;
   int networkStatusCode;
+
+  Map<String, int> sortedSize = {
+    'PP': 0,
+    'P': 1,
+    'M': 2,
+    'G': 3,
+    'GG': 4,
+    'XG': 5,
+  };
 
   @override
   void initState() {
@@ -52,7 +63,32 @@ class _ProductState extends State<Product> {
       setState(() {
         product = p.Product.fromJson(network.response);
       });
+      setVariants();
       return network.response;
+    }
+  }
+
+  void setVariants() {
+    for (var i = 0; i < product.variants.length; i++) {
+      setState(() {
+        variants.add(
+          ProductVariants(
+            size: product.variants[i].size,
+            color: product.variants[i].color,
+            qtd: product.variants[i].qtd,
+          ),
+        );
+      });
+    }
+
+    variants.sort((a, b) => sortedSize[a.size] - sortedSize[b.size]);
+    ProductVariants selected =
+        variants.firstWhere((item) => item.qtd > 0, orElse: null);
+
+    if (selected != null) {
+      selectedSize = selected.size;
+      selectedColor = selected.color;
+      selectedQtd = 1;
     }
   }
 
@@ -64,21 +100,21 @@ class _ProductState extends State<Product> {
     _getProduct = getProduct();
   }
 
-  Future<bool> checkStock({String cSize, String cColor, int cQtd}) async {
-    Map<String, dynamic> data = {
-      'size': cSize ?? size,
-      'color': cColor ?? color,
-      'qtd': cQtd ?? qtd,
-    };
-    NetworkHandler network = await Api.checkStock(widget.pid, data);
-    if (network.error) {
-      debugPrint('network error');
-      return false;
-    } else {
-      debugPrint(network.response['available'].toString());
-      return network.response['available'];
-    }
-  }
+  // Future<bool> checkStock({String cSize, String cColor, int cQtd}) async {
+  //   Map<String, dynamic> data = {
+  //     'size': cSize ?? size,
+  //     'color': cColor ?? color,
+  //     'qtd': cQtd ?? qtd,
+  //   };
+  //   NetworkHandler network = await Api.checkStock(widget.pid, data);
+  //   if (network.error) {
+  //     debugPrint('network error');
+  //     return false;
+  //   } else {
+  //     debugPrint(network.response['available'].toString());
+  //     return network.response['available'];
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -190,9 +226,11 @@ class _ProductState extends State<Product> {
           );
         },
       ),
-      bottomNavigationBar: SizedBox(
-        height: 55.0,
-        child: _buyButton(context),
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          height: 55.0,
+          child: _buyButton(context),
+        ),
       ),
     );
   }
@@ -229,6 +267,15 @@ class _ProductState extends State<Product> {
 
   void _selectProduct(context) {
     bool isLoading = false;
+    Set<String> sizeSet = Set<String>();
+    variants.sort((a, b) => sortedSize[a.size] - sortedSize[b.size]);
+    List<ProductVariants> sizesList =
+        variants.where((item) => sizeSet.add(item.size)).toList();
+    Iterable<ProductVariants> colorList =
+        variants.where((item) => item.size == selectedSize).length > 0
+            ? variants.where((item) => item.size == selectedSize)
+            : variants;
+
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -273,8 +320,7 @@ class _ProductState extends State<Product> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Visibility(
-                                      visible:
-                                          product.availableSizes.length > 0,
+                                      visible: sizesList.length > 0,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -285,34 +331,16 @@ class _ProductState extends State<Product> {
                                           ),
                                           SizedBox(height: 5.0),
                                           Row(
-                                            children:
-                                                product.availableSizes.map(
+                                            children: sizesList.map(
                                               (s) {
                                                 return GestureDetector(
-                                                  onTap: () async {
+                                                  onTap: () {
                                                     setModalState(() {
                                                       setState(() {
-                                                        color = null;
-                                                        qtd = 1;
+                                                        selectedSize = s.size;
+                                                        selectedColor = null;
+                                                        selectedQtd = 1;
                                                       });
-                                                      isLoading = true;
-                                                    });
-                                                    bool result =
-                                                        await checkStock(
-                                                      cSize: s,
-                                                      cQtd: 1,
-                                                    );
-                                                    if (result) {
-                                                      setModalState(() {
-                                                        setState(() {
-                                                          size = s;
-                                                          color = null;
-                                                          qtd = 1;
-                                                        });
-                                                      });
-                                                    }
-                                                    setModalState(() {
-                                                      isLoading = false;
                                                     });
                                                   },
                                                   child: Padding(
@@ -320,13 +348,13 @@ class _ProductState extends State<Product> {
                                                         const EdgeInsets.only(
                                                             right: 8.0),
                                                     child: Container(
-                                                      width: 50.0,
                                                       height: 40.0,
                                                       alignment:
                                                           Alignment.center,
                                                       decoration: BoxDecoration(
                                                         border: Border.all(
-                                                          color: s == size
+                                                          color: s.size ==
+                                                                  selectedSize
                                                               ? kPrimaryColor
                                                               : Colors
                                                                   .grey[400],
@@ -336,13 +364,19 @@ class _ProductState extends State<Product> {
                                                             BorderRadius
                                                                 .circular(4.0),
                                                       ),
-                                                      child: Text(
-                                                        s,
-                                                        style: TextStyle(
-                                                          color: s == size
-                                                              ? kPrimaryColor
-                                                              : Colors
-                                                                  .grey[400],
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10.0),
+                                                        child: Text(
+                                                          s.size.toUpperCase(),
+                                                          style: TextStyle(
+                                                            color: s.size ==
+                                                                    selectedSize
+                                                                ? kPrimaryColor
+                                                                : Colors
+                                                                    .grey[400],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
@@ -356,8 +390,7 @@ class _ProductState extends State<Product> {
                                       ),
                                     ),
                                     Visibility(
-                                      visible:
-                                          product.availableColors.length > 0,
+                                      visible: colorList.length > 0,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -368,36 +401,17 @@ class _ProductState extends State<Product> {
                                           ),
                                           SizedBox(height: 5.0),
                                           Row(
-                                            children:
-                                                product.availableColors.map(
+                                            children: colorList.map(
                                               (c) {
                                                 return GestureDetector(
-                                                  onTap: size != null
-                                                      ? () async {
-                                                          setModalState(() {
-                                                            setState(() {
-                                                              // qtd = 1;
-                                                            });
-                                                            isLoading = true;
-                                                          });
-                                                          bool result =
-                                                              await checkStock(
-                                                            cColor: c,
-                                                            cQtd: 1,
-                                                          );
-                                                          if (result) {
-                                                            setModalState(() {
-                                                              setState(() {
-                                                                color = c;
-                                                                qtd = 1;
-                                                              });
-                                                            });
-                                                          }
-                                                          setModalState(() {
-                                                            isLoading = false;
-                                                          });
-                                                        }
-                                                      : null,
+                                                  onTap: () {
+                                                    setModalState(() {
+                                                      setState(() {
+                                                        selectedColor = c.color;
+                                                        totalAvailable = c.qtd;
+                                                      });
+                                                    });
+                                                  },
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.only(
@@ -408,7 +422,8 @@ class _ProductState extends State<Product> {
                                                           Alignment.center,
                                                       decoration: BoxDecoration(
                                                         border: Border.all(
-                                                          color: c == color
+                                                          color: c.color ==
+                                                                  selectedColor
                                                               ? kPrimaryColor
                                                               : Colors
                                                                   .grey[400],
@@ -425,9 +440,10 @@ class _ProductState extends State<Product> {
                                                           10.0,
                                                         ),
                                                         child: Text(
-                                                          c,
+                                                          c.color.toUpperCase(),
                                                           style: TextStyle(
-                                                            color: c == color
+                                                            color: c.color ==
+                                                                    selectedColor
                                                                 ? kPrimaryColor
                                                                 : Colors
                                                                     .grey[400],
@@ -477,41 +493,29 @@ class _ProductState extends State<Product> {
                                             color: Colors.grey[400],
                                           ),
                                           onPressed: () {
-                                            if (qtd >= 2) {
+                                            if (selectedQtd >= 2) {
                                               setModalState(() {
                                                 setState(() {
-                                                  qtd--;
+                                                  selectedQtd--;
                                                 });
                                               });
                                             }
                                           },
                                         ),
                                       ),
-                                      Text(qtd.toString()),
+                                      Text(selectedQtd.toString()),
                                       IconButton(
                                         icon: Icon(
                                           Icons.add,
                                           color: kPrimaryColor,
                                         ),
-                                        onPressed: size != null && color != null
-                                            ? () async {
-                                                setModalState(() {
-                                                  isLoading = true;
-                                                });
-                                                bool result =
-                                                    await checkStock();
-                                                if (result) {
-                                                  setModalState(() {
-                                                    setState(() {
-                                                      qtd++;
-                                                    });
-                                                  });
-                                                }
-                                                setModalState(() {
-                                                  isLoading = false;
-                                                });
-                                              }
-                                            : null,
+                                        onPressed: () {
+                                          setModalState(() {
+                                            setState(() {
+                                              selectedQtd++;
+                                            });
+                                          });
+                                        },
                                       ),
                                     ],
                                   ),
@@ -531,18 +535,18 @@ class _ProductState extends State<Product> {
                         disabledColor: kPrimaryColor.withOpacity(0.5),
                         disabledTextColor: Colors.grey[600],
                         textColor: Colors.white,
-                        onPressed: size != null &&
-                                context.watch<UserModel>().isLoggedIn &&
-                                !isLoading
+                        onPressed: selectedSize != null &&
+                                selectedColor != null &&
+                                context.watch<UserModel>().isLoggedIn
                             ? () {
                                 CartProduct cartProduct = CartProduct(
                                   productId: product.id,
                                   title: product.title,
                                   catId: product.category.id,
-                                  size: size,
+                                  size: selectedSize,
                                   price: product.price,
                                   image: product.images[0],
-                                  qtd: qtd,
+                                  qtd: selectedQtd,
                                 );
                                 context
                                     .read<CartModel>()

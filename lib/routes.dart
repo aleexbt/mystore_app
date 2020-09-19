@@ -92,7 +92,7 @@ class RouteGenerator {
         );
       case '/teste':
         return MaterialPageRoute(
-          builder: (_) => OpenContainerTransformDemo(),
+          builder: (_) => Teste(),
         );
       default:
         return _errorRoute();
