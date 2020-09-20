@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mystore/models/product_model.dart';
+import 'package:intl/intl.dart';
 
-class Products extends StatelessWidget {
+class ProductBox extends StatelessWidget {
+  final List<Product> product;
+  ProductBox(this.product);
+
   @override
   Widget build(BuildContext context) {
+    final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
     return MediaQuery.removePadding(
       context: context,
       removeTop: true,
@@ -14,12 +20,12 @@ class Products extends StatelessWidget {
           childAspectRatio: 0.80,
         ),
         shrinkWrap: true,
-        itemCount: 10,
+        itemCount: product.length,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed('/home/product',
-                arguments: '5f12227165b08ed727025957'),
+            onTap: () => Navigator.of(context, rootNavigator: true)
+                .pushNamed('/home/product', arguments: product[index].id),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -33,7 +39,7 @@ class Products extends StatelessWidget {
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(8.0)),
                       child: Image.network(
-                        'https://img.jakpost.net/c/2019/12/09/2019_12_09_83333_1575827116._large.jpg',
+                        product[index].images[0],
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -44,14 +50,16 @@ class Products extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Novo kit de imagem Avon noite e dia...',
+                          product[index].title,
                           style: TextStyle(
                             color: Colors.grey[600],
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(height: 2.0),
                         Text(
-                          'R\$ 150,00',
+                          currency.format(product[index].price / 100),
                           style: TextStyle(
                               fontSize: 15.0, fontWeight: FontWeight.w600),
                         ),

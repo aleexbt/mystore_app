@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:mystore/screens/categories.dart';
 import 'package:mystore/screens/category.dart';
-import 'package:mystore/screens/product.dart';
+import 'package:mystore/screens/product/index.dart';
 
 class ProductsNavigator extends StatefulWidget {
   @override

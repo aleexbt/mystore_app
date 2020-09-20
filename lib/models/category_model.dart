@@ -1,18 +1,24 @@
 class Category {
   String id;
+  String code;
   String name;
   String icon;
 
-  Category({this.id, this.name, this.icon});
+  Category({this.id, this.code, this.name, this.icon});
 
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{'id': id, 'name': name, 'icon': icon};
-    return map;
-  }
+  factory Category.fromJson(Map<String, dynamic> json) => Category(
+        id: json['_id'],
+        code: json['code'],
+        name: json['name'],
+        icon: json['icon'],
+      );
 
-  Category.fromMap(Map<String, dynamic> map) {
-    id = map['_id'];
-    name = map['name'];
-    icon = map['icon'];
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'code': code,
+      'name': name,
+      'icon': icon,
+    };
   }
 }

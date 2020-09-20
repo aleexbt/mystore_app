@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mystore/components/product_box.dart';
 import 'package:mystore/constants.dart';
 import 'package:mystore/helpers/network_error.dart';
 import 'package:mystore/models/network_model.dart';
 import 'package:mystore/models/product_model.dart';
 import 'package:mystore/services/api.dart';
-import 'package:mystore/tiles/product_tile.dart';
 
 class Category extends StatefulWidget {
   final args;
@@ -18,6 +18,7 @@ class _CategoryState extends State<Category> {
   Future _getCategoryProducts;
   bool networkError = false;
   int networkStatusCode;
+  List<Product> products = [];
 
   @override
   void initState() {
@@ -25,15 +26,21 @@ class _CategoryState extends State<Category> {
     _getCategoryProducts = getCategoryProducts();
   }
 
-  Future getCategoryProducts() async {
+  getCategoryProducts() async {
     NetworkHandler network = await Api.productsByCategory(widget.args['catId']);
     if (network.error) {
       setState(() {
         networkError = true;
         networkStatusCode = network.statusCode;
       });
+      print('deu erro');
+      return products;
     } else {
-      return network.response;
+      List prod = network.response;
+      prod.forEach((element) {
+        products.add(Product.fromJson(element));
+      });
+      return products;
     }
   }
 
@@ -50,6 +57,7 @@ class _CategoryState extends State<Category> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: Colors.grey[200],
         appBar: AppBar(
           automaticallyImplyLeading: true,
           leading: IconButton(
@@ -59,25 +67,10 @@ class _CategoryState extends State<Category> {
           title: Text(
             widget.args['catName'].toUpperCase(),
           ),
-          bottom: TabBar(
-            indicatorColor: kPrimaryColor,
-            labelColor: Colors.grey[800],
-            unselectedLabelColor: Colors.grey[400],
-            tabs: <Widget>[
-              Tab(
-                icon: Icon(
-                  Icons.grid_on,
-                ),
-              ),
-              Tab(
-                icon: Icon(
-                  Icons.list,
-                ),
-              ),
-            ],
-          ),
         ),
-        body: FutureBuilder(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: FutureBuilder(
             future: _getCategoryProducts,
             builder: (context, snapshot) {
               if (networkError) {
@@ -112,38 +105,11 @@ class _CategoryState extends State<Category> {
                   ),
                 );
               } else {
-                return TabBarView(
-                  //physics: NeverScrollableScrollPhysics(),
-                  children: [
-                    GridView.builder(
-                      padding: EdgeInsets.all(4.0),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 4.0,
-                        childAspectRatio: 0.65,
-                      ),
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, index) {
-                        Product data = Product.fromJson(
-                          snapshot.data[index],
-                        );
-                        return ProductTile('grid', data);
-                      },
-                    ),
-                    ListView.builder(
-                      padding: EdgeInsets.all(4.0),
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, index) {
-                        Product data = Product.fromJson(
-                          snapshot.data[index],
-                        );
-                        return ProductTile('list', data);
-                      },
-                    ),
-                  ],
-                );
+                return ProductBox(snapshot.data);
               }
-            }),
+            },
+          ),
+        ),
       ),
     );
   }

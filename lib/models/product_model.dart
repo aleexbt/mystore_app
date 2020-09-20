@@ -2,11 +2,13 @@ import 'category_model.dart';
 
 class ProductVariants {
   String size;
+  String storage;
   String color;
   int qtd;
 
   ProductVariants({
     this.size,
+    this.storage,
     this.color,
     this.qtd,
   });
@@ -14,6 +16,7 @@ class ProductVariants {
   factory ProductVariants.fromJson(Map<String, dynamic> json) =>
       ProductVariants(
         size: json['size'],
+        storage: json['storage'],
         color: json['color'],
         qtd: json['qtd'],
       );
@@ -72,7 +75,7 @@ class Product {
       });
     }
     category =
-        json['category'] != null ? Category.fromMap(json['category']) : null;
+        json['category'] != null ? Category.fromJson(json['category']) : null;
   }
 
   Map<String, dynamic> toJson() {

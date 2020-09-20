@@ -13,7 +13,7 @@ import 'package:mystore/screens/settings/payment_editor.dart';
 import 'package:mystore/screens/cart/finish_order.dart';
 import 'package:mystore/screens/auth/login.dart';
 import 'package:mystore/screens/cart/payment_methods.dart';
-import 'package:mystore/screens/product.dart';
+import 'package:mystore/screens/product/index.dart';
 import 'package:mystore/screens/auth/register.dart';
 import 'package:mystore/screens/settings/payment.dart';
 import 'package:mystore/screens/settings/settings.dart';

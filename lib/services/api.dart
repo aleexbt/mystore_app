@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as s;
 import 'package:mystore/models/network_model.dart';
+import 'package:mystore/models/product_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const bool isProduction = bool.fromEnvironment('dart.vm.product');
@@ -198,6 +199,7 @@ class Api {
         response: response.data,
       );
     } on DioError catch (e) {
+      print(e);
       if (e.type == DioErrorType.CONNECT_TIMEOUT) {
         return NetworkHandler(
           statusCode: 523,
