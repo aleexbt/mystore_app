@@ -16,6 +16,7 @@ import 'product_options/modal_smartphone.dart';
 class Product extends StatefulWidget {
   final pid;
   final p.Product product;
+
   Product({this.pid, this.product});
 
   @override
@@ -75,7 +76,6 @@ class _ProductState extends State<Product> {
   //     return network.response['available'];
   //   }
   // }
-
   @override
   Widget build(BuildContext context) {
     final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
@@ -107,9 +107,12 @@ class _ProductState extends State<Product> {
                 aspectRatio: 1.1,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
                         builder: (BuildContext context) =>
-                            ShowPhoto(product.images)));
+                            ShowPhoto(product.images, 1),
+                      ),
+                    );
                   },
                   child: Carousel(
                     images: product.images.map((url) {
@@ -126,6 +129,15 @@ class _ProductState extends State<Product> {
                     overlayShadow: true,
                     dotIncreasedColor: Color.fromARGB(255, 211, 110, 130),
                     autoplay: false,
+                    onImageTap: (value) {
+                      print(value);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              ShowPhoto(product.images, value),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
