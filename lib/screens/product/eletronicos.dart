@@ -13,17 +13,17 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 
 import 'product_options/modal_smartphone.dart';
 
-class Product extends StatefulWidget {
+class Eletronicos extends StatefulWidget {
   final pid;
   final p.Product product;
 
-  Product({this.pid, this.product});
+  Eletronicos({this.pid, this.product});
 
   @override
-  _ProductState createState() => _ProductState();
+  _EletronicosState createState() => _EletronicosState();
 }
 
-class _ProductState extends State<Product> {
+class _EletronicosState extends State<Eletronicos> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   p.Product product;
   Future _getProduct;
@@ -114,101 +114,113 @@ class _ProductState extends State<Product> {
                       ),
                     );
                   },
-                  child: Carousel(
-                    images: product.images.map((url) {
-                      return buildCachedNImage(
-                        image: url,
-                        iconSize: 80.0,
-                        iconColor: Colors.black54,
-                      );
-                    }).toList(),
-                    dotSize: 5.0,
-                    dotSpacing: 15.0,
-                    dotBgColor: Colors.transparent,
-                    dotColor: Color.fromARGB(100, 211, 110, 130),
-                    overlayShadow: true,
-                    dotIncreasedColor: Color.fromARGB(255, 211, 110, 130),
-                    autoplay: false,
-                    onImageTap: (value) {
-                      print(value);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              ShowPhoto(product.images, value),
-                        ),
-                      );
-                    },
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Carousel(
+                      images: product.images.map((url) {
+                        return buildCachedNImage(
+                          image: url,
+                          iconSize: 80.0,
+                          iconColor: Colors.black54,
+                        );
+                      }).toList(),
+                      dotSize: 5.0,
+                      dotSpacing: 15.0,
+                      dotBgColor: Colors.transparent,
+                      dotColor: Color.fromARGB(100, 211, 110, 130),
+                      overlayShadow: true,
+                      dotIncreasedColor: Color.fromARGB(255, 211, 110, 130),
+                      autoplay: false,
+                      onImageTap: (value) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                ShowPhoto(product.images, value),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[800],
-                            fontSize: 17.0,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 15.0),
-                        Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Text(
-                            '${currency.format(product.price / 100)}',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Text(
+                      product.title,
+                      style: TextStyle(
+                        color: Colors.grey[800],
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Divider(),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
+                    Divider(),
+                    SizedBox(height: 10),
+                    Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Descrição',
+                            'Características',
                             style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w400,
                               color: Colors.grey[800],
                             ),
                           ),
-                          SizedBox(height: 5),
+                          SizedBox(height: 8),
                           Text(
                             product.description,
                             style: TextStyle(
                               fontSize: 15.0,
-                              color: Colors.grey[600],
+                              color: Colors.grey[500],
                             ),
                           ),
                         ]),
-                  ),
-                ],
+                  ],
+                ),
               )
             ],
           );
         },
       ),
       bottomNavigationBar: SafeArea(
-        child: SizedBox(
-          height: 55.0,
-          child: _buyButton(context),
+        child: Container(
+          padding: const EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey[200],
+                blurRadius: 1.0,
+                spreadRadius: 1.0,
+                offset: Offset(1.0, 0.0), // shadow direction: bottom right
+              )
+            ],
+          ),
+          child: SizedBox(
+            height: 50.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  product?.price != null
+                      ? currency.format(product.price / 100)
+                      : '',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 10.0),
+                Expanded(
+                  child: _buyButton(context),
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -218,27 +230,41 @@ class _ProductState extends State<Product> {
     if (product?.id == null) {
       return Container();
     } else if (product?.available == null || !product.available) {
-      return FlatButton(
-        shape: ContinuousRectangleBorder(),
-        color: kPrimaryColor,
-        disabledColor: kPrimaryColor.withOpacity(0.5),
-        disabledTextColor: Colors.grey[600],
-        textColor: Colors.white,
-        onPressed: null,
-        child: Text(
-          'PRODUTO INDISPONÍVEL',
+      return SizedBox(
+        height: 50.0,
+        child: FlatButton(
+          shape: RoundedRectangleBorder(),
+          color: kPrimaryColor,
+          disabledColor: kPrimaryColor.withOpacity(0.5),
+          disabledTextColor: Colors.grey[600],
+          textColor: Colors.white,
+          onPressed: null,
+          child: Text(
+            'INDISPONÍVEL',
+            style: TextStyle(
+              fontSize: 13,
+            ),
+          ),
         ),
       );
     } else {
-      return FlatButton(
-        shape: ContinuousRectangleBorder(),
-        color: kPrimaryColor,
-        disabledColor: kPrimaryColor.withOpacity(0.5),
-        disabledTextColor: Colors.grey[600],
-        textColor: Colors.white,
-        onPressed: () => _selectProduct(context),
-        child: Text(
-          'SELECIONAR',
+      return SizedBox(
+        height: 50.0,
+        child: FlatButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          color: kPrimaryColor,
+          disabledColor: kPrimaryColor.withOpacity(0.5),
+          disabledTextColor: Colors.grey[600],
+          textColor: Colors.white,
+          onPressed: () => _selectProduct(context),
+          child: Text(
+            'SELECIONAR',
+            style: TextStyle(
+              fontSize: 13,
+            ),
+          ),
         ),
       );
     }

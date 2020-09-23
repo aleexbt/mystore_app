@@ -16,8 +16,26 @@ class NetworkError extends StatelessWidget {
       return 'Parece que nosso servidor está sobrecarregado, tente novamente mais tarde.';
     } else if (statusCode == 502) {
       return 'Verifique sua conexão e tente novamente.';
+    } else if (statusCode == 404) {
+      return 'Ops, não conseguimos encontrar o item solicitado.';
     } else {
       return 'Ops, parece que nosso servidor está passando por dificuldades neste momento.';
+    }
+  }
+
+  SvgPicture errorIcon() {
+    if (statusCode == 404) {
+      return SvgPicture.asset(
+        'assets/not_found.svg',
+        semanticsLabel: 'Item não encontrado.',
+        width: 300.0,
+      );
+    } else {
+      return SvgPicture.asset(
+        'assets/disconnected.svg',
+        semanticsLabel: 'Sem conexão',
+        width: 500.0,
+      );
     }
   }
 
@@ -31,11 +49,7 @@ class NetworkError extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(height: MediaQuery.of(context).size.height / 6),
-          SvgPicture.asset(
-            'assets/disconnected.svg',
-            semanticsLabel: 'Sem conexão',
-            width: 500.0,
-          ),
+          errorIcon(),
           SizedBox(height: 10.0),
           Text(
             'Ocorreu um erro',

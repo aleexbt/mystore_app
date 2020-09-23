@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mystore/app.dart';
 import 'package:mystore/screens/cart/select_address.dart';
+import 'package:mystore/screens/product/eletronicos.dart';
 import 'package:mystore/screens/settings/address.dart';
 import 'package:mystore/screens/settings/address_editor.dart';
 import 'package:mystore/screens/cart/cart.dart';
@@ -13,7 +14,7 @@ import 'package:mystore/screens/settings/payment_editor.dart';
 import 'package:mystore/screens/cart/finish_order.dart';
 import 'package:mystore/screens/auth/login.dart';
 import 'package:mystore/screens/cart/payment_methods.dart';
-import 'package:mystore/screens/product/index.dart';
+import 'package:mystore/screens/product/roupas.dart';
 import 'package:mystore/screens/auth/register.dart';
 import 'package:mystore/screens/settings/payment.dart';
 import 'package:mystore/screens/settings/settings.dart';
@@ -35,11 +36,13 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => Categories());
       case '/category':
         return MaterialPageRoute(builder: (_) => Category(args));
-      case '/product':
-        return MaterialPageRoute(builder: (_) => Product(pid: args));
+      case '/product/roupas':
+        return MaterialPageRoute(builder: (_) => Roupas(pid: args));
+      case '/product/eletronicos':
+        return MaterialPageRoute(builder: (_) => Eletronicos(pid: args));
       case '/home/product':
         return CupertinoPageRoute(
-            builder: (_) => Product(pid: args), fullscreenDialog: true);
+            builder: (_) => Roupas(pid: args), fullscreenDialog: true);
       case '/cart':
         // return MaterialPageRoute(builder: (_) => Cart());
         return CupertinoPageRoute(

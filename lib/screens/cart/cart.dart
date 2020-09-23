@@ -44,7 +44,6 @@ class _CartState extends State<Cart> {
         cartModel.selectedShipping != null && cartModel.selectedShipping != '';
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         automaticallyImplyLeading: true,
         leading: IconButton(
@@ -127,8 +126,7 @@ class _CartState extends State<Cart> {
                       return CartTile(product);
                     }).toList(),
                   ),
-                  // DiscountCard(),
-
+                  SizedBox(height: 10.0),
                   GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: () => _insertCoupon(),
@@ -144,7 +142,6 @@ class _CartState extends State<Cart> {
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey[300],
-                            // spreadRadius: 1,
                             blurRadius: 0,
                             offset:
                                 Offset(0.0, 0.5), // changes position of shadow
@@ -177,9 +174,9 @@ class _CartState extends State<Cart> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 5.0),
-                  // ShipCard(),
+                  SizedBox(height: 10.0),
                   selectAddress2(context),
+                  SizedBox(height: 10.0),
                   CartPrice(products: data.products),
                   SizedBox(height: 10.0),
                 ],
@@ -229,7 +226,7 @@ class _CartState extends State<Cart> {
         return OpenContainer(
           transitionType: ContainerTransitionType.fade,
           openBuilder: (context, openContainer) => SelectAddress(),
-          closedColor: Colors.grey[100],
+          closedColor: Colors.white,
           closedElevation: 0.0,
           closedShape: ContinuousRectangleBorder(),
           openShape: ContinuousRectangleBorder(),

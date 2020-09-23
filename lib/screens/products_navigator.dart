@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mystore/helpers/navigation_helper.dart';
 import 'package:mystore/screens/categories.dart';
 import 'package:mystore/screens/category.dart';
-import 'package:mystore/screens/product/index.dart';
+import 'package:mystore/screens/product/eletronicos.dart';
+import 'package:mystore/screens/product/roupas.dart';
 
 class ProductsNavigator extends StatefulWidget {
   @override
@@ -33,7 +34,15 @@ class _ProductsNavigatorState extends State<ProductsNavigator>
               );
             case '/product':
               return MaterialPageRoute(
-                builder: (_) => Product(pid: args),
+                builder: (_) => Roupas(pid: args),
+              );
+            case '/product/roupas':
+              return MaterialPageRoute(
+                builder: (_) => Roupas(pid: args),
+              );
+            case '/product/eletronicos':
+              return MaterialPageRoute(
+                builder: (_) => Eletronicos(pid: args),
               );
             default:
               return _errorRoute();

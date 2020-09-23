@@ -9,13 +9,6 @@ class CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      // leading: CircleAvatar(
-      //   radius: 25.0,
-      //   backgroundColor: Colors.transparent,
-      //   backgroundImage: NetworkImage(
-      //     data['icon'],
-      //   ),
-      // ),
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(100.0),
         child: SizedBox(
@@ -32,8 +25,11 @@ class CategoryTile extends StatelessWidget {
       trailing: Icon(Icons.keyboard_arrow_right),
       onTap: () {
         //Get.to(CategoryScreen(catName: data['name'], catId: data['_id']));
-        Navigator.pushNamed(context, '/category',
-            arguments: {'catName': data['name'], 'catId': data['_id']});
+        Navigator.pushNamed(context, '/category', arguments: {
+          'catName': data['name'],
+          'catId': data['_id'],
+          'code': data['code'],
+        });
       },
     );
   }

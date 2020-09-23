@@ -83,6 +83,7 @@ flutter:
   assets:
     - assets/shop.svg
     - assets/disconnected.svg
+    - assets/not_found.svg
     - assets/successful_purchase.svg
     - assets/credit_card_icons/
     #   - images/a_dot_ham.jpeg

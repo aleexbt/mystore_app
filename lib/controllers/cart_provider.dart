@@ -234,7 +234,26 @@ class CartModel extends ChangeNotifier {
       'cardDetails': card != null ? cardDetails : null,
     };
 
-    var response = await Api.createOrder(orderData);
+    Map<String, dynamic> orderData2 = {
+      'products': products.map((cartProduct) => cartProduct.toJson()).toList(),
+      'discountCode': couponCode,
+      'shipping': selectedShipping,
+      'paymentMethod': paymentMethod,
+      'paymentChange': paymentChange,
+      'cardDetails': card != null ? cardDetails : null,
+    };
+
+    // isLoading = false;
+    // notifyListeners();
+    //
+    // print(orderData2);
+    // return {
+    //   'success': false,
+    //   'title': 'erro',
+    //   'msg': 'teste',
+    // };
+
+    var response = await Api.createOrder(orderData2);
     if (response.data['success']) {
       // await NavKey.navKey.currentState.pushNamedAndRemoveUntil(
       //     'FinishOrder', ModalRoute.withName('App'),

@@ -4,7 +4,8 @@ import 'package:intl/intl.dart';
 
 class ProductBox extends StatelessWidget {
   final List<Product> product;
-  ProductBox(this.product);
+  final String catCode;
+  ProductBox(this.product, this.catCode);
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +25,16 @@ class ProductBox extends StatelessWidget {
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () => Navigator.of(context, rootNavigator: true)
-                .pushNamed('/home/product', arguments: product[index].id),
+            onTap: () {
+              if (catCode == "00005") {
+                Navigator.of(context, rootNavigator: true).pushNamed(
+                    '/product/eletronicos',
+                    arguments: product[index].id);
+              } else {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed('/product/roupas', arguments: product[index].id);
+              }
+            },
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,

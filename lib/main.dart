@@ -74,13 +74,13 @@ class MyApp extends StatelessWidget {
               ),
               textTheme: TextTheme(
                 headline6: TextStyle(
-                  fontFamily: 'SulSans',
+                  // fontFamily: 'SulSans',
                   color: Colors.black,
                   fontSize: 16.0,
                 ),
               ),
             ),
-            fontFamily: 'SulSans',
+            // fontFamily: 'SulSans',
             brightness: Brightness.light,
             scaffoldBackgroundColor: Colors.white,
             primaryColor: kPrimaryColor,
@@ -108,13 +108,13 @@ class MyApp extends StatelessWidget {
               ),
               textTheme: TextTheme(
                 headline6: TextStyle(
-                  fontFamily: 'SulSans',
+                  // fontFamily: 'SulSans',
                   color: Colors.black,
                   fontSize: 22.0,
                 ),
               ),
             ),
-            fontFamily: 'SulSans',
+            // fontFamily: 'SulSans',
             brightness: Brightness.dark,
             scaffoldBackgroundColor: Colors.white,
             primaryColor: Colors.white,

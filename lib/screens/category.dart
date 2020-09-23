@@ -33,7 +33,6 @@ class _CategoryState extends State<Category> {
         networkError = true;
         networkStatusCode = network.statusCode;
       });
-      print('deu erro');
       return products;
     } else {
       List prod = network.response;
@@ -105,7 +104,7 @@ class _CategoryState extends State<Category> {
                   ),
                 );
               } else {
-                return ProductBox(snapshot.data);
+                return ProductBox(snapshot.data, widget.args['code']);
               }
             },
           ),
